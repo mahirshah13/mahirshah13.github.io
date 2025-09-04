@@ -1,77 +1,303 @@
 <!DOCTYPE html>
-<header class="site-header">
-<div class="container header-inner">
-<a class="brand" href="/">Your Name</a>
-<nav class="nav">
-<a href="/">Home</a>
-<a href="#projects">Projects</a>
-<a href="#about">About</a>
-<button id="theme-toggle" class="btn btn-ghost" aria-label="Toggle theme">☾</button>
-</nav>
-</div>
-</header>
+<html>
+<head>
+    <title>My CS180 Portfolio</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-<main class="container">
-<section class="hero">
-<h1>CS180/280A Portfolio</h1>
-<p class="lede">A running log of course projects with write‑ups, images, and demos.</p>
-<div class="pillbar">
-<a class="pill" href="./1/">Project 1</a>
-<a class="pill" href="./2/">Project 2</a>
-<a class="pill disabled" href="#">Project 3 (TBA)</a>
-</div>
-</section>
+        /* Main container */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
 
+        /* Header section */
+        .header {
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
 
-<section id="projects">
-<h2>Projects</h2>
-<div class="grid">
-<article class="card">
-<a class="card__cover" href="./1/">
-<img src="./1/media/cover.jpg" alt="Project 1 cover" />
-</a>
-<div class="card__body">
-<h3><a href="./1/">Project 1: Title</a></h3>
-<p>One‑line summary of what you built, key techniques, and coolest result.</p>
-<div class="tags">
-<span class="tag">Python</span>
-<span class="tag">Numpy</span>
-<span class="tag">Visualization</span>
-</div>
-</div>
-</article>
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
 
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
 
-<article class="card">
-<a class="card__cover" href="./2/">
-<img src="./2/media/cover.jpg" alt="Project 2 cover" />
-</a>
-<div class="card__body">
-<h3><a href="./2/">Project 2: Title</a></h3>
-<p>One‑line summary; replace image and links as you add each project.</p>
-<div class="tags">
-<span class="tag">C++</span>
-<span class="tag">OpenCV</span>
-</div>
-</div>
-</article>
-</div>
-</section>
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
 
+        /* Content section */
+        .content {
+            padding: 40px;
+        }
 
-<section id="about" class="about">
-<h2>About</h2>
-<p>Hi! I’m <strong>Your Name</strong>, an undergrad at UC Berkeley. This site hosts my CS180/280A work. Source code for each project is linked inside the write‑ups. Email me at <a href="mailto:you@berkeley.edu">you@berkeley.edu</a>.</p>
-</section>
-</main>
+        .intro {
+            text-align: center;
+            margin-bottom: 50px;
+        }
 
+        .intro h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 2em;
+        }
 
-<footer class="site-footer">
-<div class="container">
-<p>© <span id="y"></span> Your Name • Built with GitHub Pages</p>
-</div>
-<script>document.getElementById('y').textContent = new Date().getFullYear();</script>
-</footer>
+        .intro p {
+            color: #666;
+            font-size: 1.1em;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Projects grid */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .project-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .project-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .project-header h3 {
+            font-size: 1.4em;
+            margin-bottom: 8px;
+        }
+
+        .project-header .project-number {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .project-content {
+            padding: 25px;
+        }
+
+        .project-description {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .project-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .project-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            text-decoration: none;
+            color: white;
+        }
+
+        /* Footer */
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+        }
+
+        .footer p {
+            opacity: 0.8;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 40px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .projects-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .project-card {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .project-card:nth-child(2) { animation-delay: 0.1s; }
+        .project-card:nth-child(3) { animation-delay: 0.2s; }
+        .project-card:nth-child(4) { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>CS180 Portfolio</h1>
+            <p>Computer Vision & Computational Photography</p>
+        </header>
+
+        <div class="content">
+            <div class="intro">
+                <h2>Welcome to My Journey</h2>
+                <p>This portfolio showcases my work in CS180, exploring the fascinating world of computer vision, image processing, and computational photography. Each project represents a step forward in understanding how computers can see and manipulate visual information.</p>
+            </div>
+
+            <div class="projects-grid">
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-number">Project 0</div>
+                        <h3>Becoming Friends with Your Camera</h3>
+                    </div>
+                    <div class="project-content">
+                        <p class="project-description">
+                            Exploring the relationship between perspective, focal length, and center of projection through selfies, architectural photography, and the classic dolly zoom effect.
+                        </p>
+                        <a href="./0/index.html" class="project-link">View Project →</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-number">Project 1</div>
+                        <h3>Images of the Russian Empire</h3>
+                    </div>
+                    <div class="project-content">
+                        <p class="project-description">
+                            Colorizing the Prokudin-Gorskii photo collection by automatically aligning glass plate negatives to create stunning color images from the early 1900s.
+                        </p>
+                        <a href="./1/index.html" class="project-link">View Project →</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-number">Project 2</div>
+                        <h3>Fun with Filters</h3>
+                    </div>
+                    <div class="project-content">
+                        <p class="project-description">
+                            Exploring edge detection, sharpening, and hybrid images using 2D convolutions and frequency domain analysis.
+                        </p>
+                        <a href="./2/index.html" class="project-link">View Project →</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-number">Project 3</div>
+                        <h3>Face Morphing</h3>
+                    </div>
+                    <div class="project-content">
+                        <p class="project-description">
+                            Creating smooth face morphs using triangulation, affine transformations, and cross-dissolving techniques.
+                        </p>
+                        <a href="./3/index.html" class="project-link">View Project →</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-number">Project 4</div>
+                        <h3>Image Stitching</h3>
+                    </div>
+                    <div class="project-content">
+                        <p class="project-description">
+                            Building panoramas by detecting Harris corners, matching features, and computing homographies between images.
+                        </p>
+                        <a href="./4/index.html" class="project-link">View Project →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>CS180: Intro to Computer Vision and Computational Photography • UC Berkeley</p>
+        </footer>
+    </div>
 </body>
 </html>
