@@ -112,12 +112,21 @@
             display: flex;
             gap: 20px;
             justify-content: center;
+            align-items: flex-start;
             flex-wrap: wrap;
             margin: 30px 0;
         }
 
+        .image-pair > div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
         .image-pair img {
-            max-width: 45%;
+            max-width: 100%;
+            width: 400px;
             height: auto;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
@@ -128,12 +137,19 @@
             transform: scale(1.05);
         }
 
+        .single-image {
+            text-align: center;
+            margin: 30px 0;
+        }
+
         .single-image img {
             max-width: 80%;
             height: auto;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s ease;
+            display: block;
+            margin: 0 auto;
         }
 
         .single-image img:hover {
@@ -145,6 +161,7 @@
             color: #666;
             margin-top: 10px;
             font-size: 0.9em;
+            text-align: center;
         }
 
         .gif-container {
@@ -160,6 +177,13 @@
             height: auto;
             border-radius: 10px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: block;
+            margin: 0 auto;
+        }
+
+        .gif-container h3 {
+            text-align: center;
+            margin-bottom: 20px;
         }
 
         .analysis {
@@ -199,10 +223,15 @@
             
             .image-pair img {
                 max-width: 90%;
+                width: auto;
             }
             
             .single-image img {
                 max-width: 95%;
+            }
+
+            .gif-container img {
+                max-width: 90%;
             }
         }
     </style>
@@ -216,10 +245,10 @@
         </header>
 
         <div class="content">
-            <div class="overview">
+            <!-- <div class="overview">
                 <h2>Overview</h2>
                 <p>The goal of this project is to develop an intuitive understanding of the relationship between perspective, focal length/zoom, and the center of projection. Through three different photography exercises, we explore how camera positioning and zoom affect the appearance of subjects and scenes.</p>
-            </div>
+            </div> -->
 
             <div class="part">
                 <h2>Part 1: Selfie - The Wrong Way vs. The Right Way</h2>
@@ -227,51 +256,39 @@
                 
                 <div class="image-pair">
                     <div>
-                        <img src="../1/media/img1.JPG" alt="Close-up selfie showing distortion">
+                        <img src="../0/media/img1.JPG" alt="Close-up selfie showing distortion">
                         <div class="image-caption">Close-up selfie (distorted)</div>
                     </div>
                     <div>
-                        <img src="../1/media/img2.JPG" alt="Distant selfie with zoom showing better proportions">
+                        <img src="../0/media/img2.JPG" alt="Distant selfie with zoom showing better proportions">
                         <div class="image-caption">Distant selfie with zoom (better proportions)</div>
                     </div>
                 </div>
 
                 <div class="analysis">
                     <h4>Analysis:</h4>
-                    <p>The close-up photo shows typical selfie distortion, where facial features nearest to the camera appear unnaturally large, while features further away appear smaller. The distant photo with zoom maintains better proportions because the camera's center of projection is further away, reducing perspective distortion. This creates a more flattering and natural-looking portrait.</p>
+                    <p>A close-up selfie makes nearby features look bigger and farther ones smaller, causing distortion. A zoomed photo from farther away looks more natural because it reduces this distortion and keeps facial proportions balanced.</p>
                 </div>
             </div>
 
             <div class="part">
                 <h2>Part 2: Architectural Perspective Compression</h2>
-                <p>This exercise demonstrates perspective compression by comparing a zoomed-in distant shot with a close-up wide-angle shot of the same scene.</p>
+                <!-- <p>This exercise demonstrates perspective compression by comparing a zoomed-in distant shot with a close-up wide-angle shot of the same scene.</p> -->
                 
                 <div class="image-pair">
                     <div>
-                        <img src="../1/media/img3.JPG" alt="Zoomed architectural shot showing compression">
+                        <img src="../0/media/img3.JPG" alt="Zoomed architectural shot showing compression">
                         <div class="image-caption">Zoomed shot (compressed perspective)</div>
                     </div>
                     <div>
-                        <img src="../1/media/img4.JPG" alt="Wide-angle close-up showing depth">
+                        <img src="../0/media/img4.JPG" alt="Wide-angle close-up showing depth">
                         <div class="image-caption">Wide-angle close-up (enhanced depth)</div>
-                    </div>
-                </div>
-
-                <h3>Additional Comparison Shots</h3>
-                <div class="image-pair">
-                    <div>
-                        <img src="../1/media/img5.JPG" alt="Additional architectural view">
-                        <div class="image-caption">Another perspective view</div>
-                    </div>
-                    <div>
-                        <img src="../1/media/img6.JPG" alt="Complementary architectural shot">
-                        <div class="image-caption">Complementary angle</div>
                     </div>
                 </div>
 
                 <div class="analysis">
                     <h4>Analysis:</h4>
-                    <p>The zoomed shot appears "flattened" or compressed, with background elements appearing closer to foreground elements than they actually are. The wide-angle close-up shot shows more dramatic depth, with strong perspective lines and greater apparent distance between near and far objects. This difference occurs because telephoto lenses compress depth while wide-angle lenses enhance it.</p>
+                    <p>A zoomed shot looks flatter, making the background seem closer to the subject. A wide-angle close-up exaggerates depth, making near objects look bigger and far ones look farther away. This happens because telephoto lenses compress space, while wide lenses stretch it.</p>
                 </div>
             </div>
 
@@ -281,31 +298,42 @@
                 
                 <div class="image-pair">
                     <div>
-                        <img src="../1/media/img7.JPG" alt="Starting position for dolly zoom">
+                        <img src="../0/media/img5.JPG" alt="Additional architectural view">
                         <div class="image-caption">Starting position</div>
                     </div>
                     <div>
-                        <img src="../1/media/img8.JPG" alt="End position for dolly zoom">
+                        <img src="../0/media/img6.JPG" alt="Complementary architectural shot">
+                        <div class="image-caption">Next position</div>
+                    </div>
+                </div>
+
+                <div class="image-pair">
+                    <div>
+                        <img src="../0/media/img7.JPG" alt="Starting position for dolly zoom">
+                        <div class="image-caption">Next position</div>
+                    </div>
+                    <div>
+                        <img src="../0/media/img8.JPG" alt="End position for dolly zoom">
                         <div class="image-caption">End position</div>
                     </div>
                 </div>
 
                 <div class="gif-container">
                     <h3>Animated Dolly Zoom Sequence</h3>
-                    <img src="../1/media/gif9.gif" alt="Animated dolly zoom effect showing perspective change">
+                    <img src="../0/media/gif9.gif" alt="Animated dolly zoom effect showing perspective change">
                     <div class="image-caption">Complete dolly zoom sequence showing the "Vertigo effect"</div>
                 </div>
 
                 <div class="analysis">
                     <h4>Analysis:</h4>
-                    <p>The dolly zoom creates a surreal effect where the main subject remains the same size, but the background appears to stretch or compress dramatically. This happens because as we move the camera back and zoom in, we're changing the perspective relationship between foreground and background elements while maintaining the subject's size in the frame. The result is a disorienting visual effect that has been used in countless films to convey psychological tension or revelation.</p>
+                    <p>The dolly zoom keeps the subject the same size but makes the background stretch or shrink. This happens because moving the camera back while zooming in changes perspective, creating a dramatic, unsettling effect often used in films to show tension or shock.</p>
                 </div>
             </div>
 
-            <div class="overview">
+            <!-- <div class="overview">
                 <h2>Key Takeaways</h2>
                 <p>Through these exercises, we see how camera position and focal length work together to control perspective. Close-up wide shots create distortion and exaggerated depth, while distant telephoto shots compress space and reduce distortion. Understanding these principles is fundamental to both photography and computer vision, as they affect how we perceive and measure spatial relationships in images.</p>
-            </div>
+            </div> -->
         </div>
     </div>
 </body>
