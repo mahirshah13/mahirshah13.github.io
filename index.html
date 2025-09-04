@@ -1,16 +1,77 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>My Portfolio</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-    </style>
-</head>
-<body>
-    <h1>Welcome to My CS180 Portfolio!</h1>
-    <a href="./1/index.html">Project 1</a>
+<header class="site-header">
+<div class="container header-inner">
+<a class="brand" href="/">Your Name</a>
+<nav class="nav">
+<a href="/">Home</a>
+<a href="#projects">Projects</a>
+<a href="#about">About</a>
+<button id="theme-toggle" class="btn btn-ghost" aria-label="Toggle theme">☾</button>
+</nav>
+</div>
+</header>
+
+
+<main class="container">
+<section class="hero">
+<h1>CS180/280A Portfolio</h1>
+<p class="lede">A running log of course projects with write‑ups, images, and demos.</p>
+<div class="pillbar">
+<a class="pill" href="./1/">Project 1</a>
+<a class="pill" href="./2/">Project 2</a>
+<a class="pill disabled" href="#">Project 3 (TBA)</a>
+</div>
+</section>
+
+
+<section id="projects">
+<h2>Projects</h2>
+<div class="grid">
+<article class="card">
+<a class="card__cover" href="./1/">
+<img src="./1/media/cover.jpg" alt="Project 1 cover" />
+</a>
+<div class="card__body">
+<h3><a href="./1/">Project 1: Title</a></h3>
+<p>One‑line summary of what you built, key techniques, and coolest result.</p>
+<div class="tags">
+<span class="tag">Python</span>
+<span class="tag">Numpy</span>
+<span class="tag">Visualization</span>
+</div>
+</div>
+</article>
+
+
+<article class="card">
+<a class="card__cover" href="./2/">
+<img src="./2/media/cover.jpg" alt="Project 2 cover" />
+</a>
+<div class="card__body">
+<h3><a href="./2/">Project 2: Title</a></h3>
+<p>One‑line summary; replace image and links as you add each project.</p>
+<div class="tags">
+<span class="tag">C++</span>
+<span class="tag">OpenCV</span>
+</div>
+</div>
+</article>
+</div>
+</section>
+
+
+<section id="about" class="about">
+<h2>About</h2>
+<p>Hi! I’m <strong>Your Name</strong>, an undergrad at UC Berkeley. This site hosts my CS180/280A work. Source code for each project is linked inside the write‑ups. Email me at <a href="mailto:you@berkeley.edu">you@berkeley.edu</a>.</p>
+</section>
+</main>
+
+
+<footer class="site-footer">
+<div class="container">
+<p>© <span id="y"></span> Your Name • Built with GitHub Pages</p>
+</div>
+<script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+</footer>
 </body>
 </html>
