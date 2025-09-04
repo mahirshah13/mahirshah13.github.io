@@ -1,89 +1,312 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Project 1 – Descriptive Title</title>
-<link rel="stylesheet" href="/style.css" />
+    <title>Project 0: Becoming Friends with Your Camera</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .nav-back {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-back:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .overview {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            border-left: 5px solid #3498db;
+        }
+
+        .overview h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .part {
+            margin-bottom: 50px;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .part h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .part h3 {
+            color: #3498db;
+            margin-bottom: 15px;
+            margin-top: 25px;
+        }
+
+        .image-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .image-pair {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .image-pair img {
+            max-width: 45%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .image-pair img:hover {
+            transform: scale(1.05);
+        }
+
+        .single-image img {
+            max-width: 80%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .single-image img:hover {
+            transform: scale(1.05);
+        }
+
+        .image-caption {
+            font-style: italic;
+            color: #666;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .gif-container {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+
+        .gif-container img {
+            max-width: 60%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .analysis {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        .analysis h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 40px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .image-pair {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .image-pair img {
+                max-width: 90%;
+            }
+            
+            .single-image img {
+                max-width: 95%;
+            }
+        }
+    </style>
 </head>
 <body>
-<header class="site-header">
-<div class="container header-inner">
-<a class="brand" href="/">← Back to Portfolio</a>
-<nav class="nav">
-<a href="/">Home</a>
-<a href="#results">Results</a>
-<a href="#discussion">Discussion</a>
-</nav>
-</div>
-</header>
+    <div class="container">
+        <header class="header">
+            <a href="../index.html" class="nav-back">← Back to Portfolio</a>
+            <h1>Project 0: Becoming Friends with Your Camera</h1>
+            <p>Exploring perspective, focal length, and the center of projection</p>
+        </header>
 
+        <div class="content">
+            <div class="overview">
+                <h2>Overview</h2>
+                <p>The goal of this project is to develop an intuitive understanding of the relationship between perspective, focal length/zoom, and the center of projection. Through three different photography exercises, we explore how camera positioning and zoom affect the appearance of subjects and scenes.</p>
+            </div>
 
-<main class="container">
-<article>
-<h1>Project 1: Descriptive Title</h1>
-<p class="lede">One‑sentence summary of the goal and the main technique.</p>
+            <div class="part">
+                <h2>Part 1: Selfie - The Wrong Way vs. The Right Way</h2>
+                <p>This part demonstrates the difference between close-up photography with wide angle versus distant photography with zoom, keeping the subject size constant.</p>
+                
+                <div class="image-pair">
+                    <div>
+                        <img src="../1/media/img1.JPG" alt="Close-up selfie showing distortion">
+                        <div class="image-caption">Close-up selfie (distorted)</div>
+                    </div>
+                    <div>
+                        <img src="../1/media/img2.JPG" alt="Distant selfie with zoom showing better proportions">
+                        <div class="image-caption">Distant selfie with zoom (better proportions)</div>
+                    </div>
+                </div>
 
+                <div class="analysis">
+                    <h4>Analysis:</h4>
+                    <p>The close-up photo shows typical selfie distortion, where facial features nearest to the camera appear unnaturally large, while features further away appear smaller. The distant photo with zoom maintains better proportions because the camera's center of projection is further away, reducing perspective distortion. This creates a more flattering and natural-looking portrait.</p>
+                </div>
+            </div>
 
-<h2>Overview</h2>
-<p>State the problem, dataset/sources, and what you implemented. Mention any referenced starter code or libraries.
-Include a bullet list of contributions if helpful.</p>
+            <div class="part">
+                <h2>Part 2: Architectural Perspective Compression</h2>
+                <p>This exercise demonstrates perspective compression by comparing a zoomed-in distant shot with a close-up wide-angle shot of the same scene.</p>
+                
+                <div class="image-pair">
+                    <div>
+                        <img src="../1/media/img3.JPG" alt="Zoomed architectural shot showing compression">
+                        <div class="image-caption">Zoomed shot (compressed perspective)</div>
+                    </div>
+                    <div>
+                        <img src="../1/media/img4.JPG" alt="Wide-angle close-up showing depth">
+                        <div class="image-caption">Wide-angle close-up (enhanced depth)</div>
+                    </div>
+                </div>
 
+                <h3>Additional Comparison Shots</h3>
+                <div class="image-pair">
+                    <div>
+                        <img src="../1/media/img5.JPG" alt="Additional architectural view">
+                        <div class="image-caption">Another perspective view</div>
+                    </div>
+                    <div>
+                        <img src="../1/media/img6.JPG" alt="Complementary architectural shot">
+                        <div class="image-caption">Complementary angle</div>
+                    </div>
+                </div>
 
-<h2>Method</h2>
-<ul>
-<li><strong>Algorithm:</strong> Brief math/algorithm description.</li>
-<li><strong>Implementation details:</strong> Any tricks/engineering choices.</li>
-<li><strong>Hyperparameters:</strong> Key values (learning rate, iterations, etc.).</li>
-</ul>
+                <div class="analysis">
+                    <h4>Analysis:</h4>
+                    <p>The zoomed shot appears "flattened" or compressed, with background elements appearing closer to foreground elements than they actually are. The wide-angle close-up shot shows more dramatic depth, with strong perspective lines and greater apparent distance between near and far objects. This difference occurs because telephoto lenses compress depth while wide-angle lenses enhance it.</p>
+                </div>
+            </div>
 
+            <div class="part">
+                <h2>Part 3: The Dolly Zoom (Vertigo Effect)</h2>
+                <p>The classic film technique where the camera moves backward while zooming in, keeping the subject size constant while dramatically changing the background perspective.</p>
+                
+                <div class="image-pair">
+                    <div>
+                        <img src="../1/media/img7.JPG" alt="Starting position for dolly zoom">
+                        <div class="image-caption">Starting position</div>
+                    </div>
+                    <div>
+                        <img src="../1/media/img8.JPG" alt="End position for dolly zoom">
+                        <div class="image-caption">End position</div>
+                    </div>
+                </div>
 
-<h2 id="results">Results</h2>
-<figure class="figure">
-<img src="./media/img1.jpg" alt="Result image 1" />
-<figcaption>Caption explaining what we see.</figcaption>
-</figure>
+                <div class="gif-container">
+                    <h3>Animated Dolly Zoom Sequence</h3>
+                    <img src="../1/media/gif9.gif" alt="Animated dolly zoom effect showing perspective change">
+                    <div class="image-caption">Complete dolly zoom sequence showing the "Vertigo effect"</div>
+                </div>
 
+                <div class="analysis">
+                    <h4>Analysis:</h4>
+                    <p>The dolly zoom creates a surreal effect where the main subject remains the same size, but the background appears to stretch or compress dramatically. This happens because as we move the camera back and zoom in, we're changing the perspective relationship between foreground and background elements while maintaining the subject's size in the frame. The result is a disorienting visual effect that has been used in countless films to convey psychological tension or revelation.</p>
+                </div>
+            </div>
 
-<div class="gallery">
-<img src="./media/img2.jpg" alt="Gallery image" />
-<img src="./media/img3.jpg" alt="Gallery image" />
-<img src="./media/img4.jpg" alt="Gallery image" />
-</div>
-
-
-<h2>Quantitative Evaluation</h2>
-<table class="table">
-<thead>
-<tr><th>Metric</th><th>Baseline</th><th>Ours</th></tr>
-</thead>
-<tbody>
-<tr><td>PSNR ↑</td><td>18.2</td><td>24.7</td></tr>
-<tr><td>SSIM ↑</td><td>0.62</td><td>0.81</td></tr>
-</tbody>
-</table>
-
-
-<h2 id="discussion">Discussion</h2>
-<p>Two or three paragraphs on what worked, what didn’t, limitations, and next steps.</p>
-
-
-<h2>Appendix</h2>
-<pre><code>// Optionally paste small code excerpts here (not full files)
-// for clarity and to keep the page tidy.
-</code></pre>
-
-
-<p><a class="backtop" href="#top">▲ Back to top</a></p>
-</article>
-</main>
-
-
-<footer class="site-footer">
-<div class="container">
-<p>© <span id="y"></span> Your Name</p>
-</div>
-<script>document.getElementById('y').textContent = new Date().getFullYear();</script>
-</footer>
+            <div class="overview">
+                <h2>Key Takeaways</h2>
+                <p>Through these exercises, we see how camera position and focal length work together to control perspective. Close-up wide shots create distortion and exaggerated depth, while distant telephoto shots compress space and reduce distortion. Understanding these principles is fundamental to both photography and computer vision, as they affect how we perceive and measure spatial relationships in images.</p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
