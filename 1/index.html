@@ -1,1 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Project 1 – Descriptive Title</title>
+<link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+<header class="site-header">
+<div class="container header-inner">
+<a class="brand" href="/">← Back to Portfolio</a>
+<nav class="nav">
+<a href="/">Home</a>
+<a href="#results">Results</a>
+<a href="#discussion">Discussion</a>
+</nav>
+</div>
+</header>
 
+
+<main class="container">
+<article>
+<h1>Project 1: Descriptive Title</h1>
+<p class="lede">One‑sentence summary of the goal and the main technique.</p>
+
+
+<h2>Overview</h2>
+<p>State the problem, dataset/sources, and what you implemented. Mention any referenced starter code or libraries.
+Include a bullet list of contributions if helpful.</p>
+
+
+<h2>Method</h2>
+<ul>
+<li><strong>Algorithm:</strong> Brief math/algorithm description.</li>
+<li><strong>Implementation details:</strong> Any tricks/engineering choices.</li>
+<li><strong>Hyperparameters:</strong> Key values (learning rate, iterations, etc.).</li>
+</ul>
+
+
+<h2 id="results">Results</h2>
+<figure class="figure">
+<img src="./media/img1.jpg" alt="Result image 1" />
+<figcaption>Caption explaining what we see.</figcaption>
+</figure>
+
+
+<div class="gallery">
+<img src="./media/img2.jpg" alt="Gallery image" />
+<img src="./media/img3.jpg" alt="Gallery image" />
+<img src="./media/img4.jpg" alt="Gallery image" />
+</div>
+
+
+<h2>Quantitative Evaluation</h2>
+<table class="table">
+<thead>
+<tr><th>Metric</th><th>Baseline</th><th>Ours</th></tr>
+</thead>
+<tbody>
+<tr><td>PSNR ↑</td><td>18.2</td><td>24.7</td></tr>
+<tr><td>SSIM ↑</td><td>0.62</td><td>0.81</td></tr>
+</tbody>
+</table>
+
+
+<h2 id="discussion">Discussion</h2>
+<p>Two or three paragraphs on what worked, what didn’t, limitations, and next steps.</p>
+
+
+<h2>Appendix</h2>
+<pre><code>// Optionally paste small code excerpts here (not full files)
+// for clarity and to keep the page tidy.
+</code></pre>
+
+
+<p><a class="backtop" href="#top">▲ Back to top</a></p>
+</article>
+</main>
+
+
+<footer class="site-footer">
+<div class="container">
+<p>© <span id="y"></span> Your Name</p>
+</div>
+<script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+</footer>
+</body>
+</html>
