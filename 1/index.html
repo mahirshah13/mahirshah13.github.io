@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Project 1: Colorizing the Prokudin-Gorskii Photo Collection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .nav-back {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-back:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .overview {
+            background: #f8f9fa;
+            padding: 35px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            border-left: 5px solid #3498db;
+        }
+
+        .overview h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.6em;
+        }
+
+        .overview p {
+            line-height: 1.8;
+            font-size: 1.05em;
+        }
+
+        .part {
+            margin-bottom: 50px;
+            padding: 35px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .part p {
+            margin-bottom: 18px;
+            line-height: 1.7;
+        }
+
+        .part p:last-of-type {
+            margin-bottom: 25px;
+        }
+
+        .part h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 15px;
+        }
+
+        .images-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            margin: 30px 0;
+        }
+
+        .image-comparison {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-title {
+            text-align: center;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .image-pair {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .image-pair > div {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .image-pair img {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .image-pair img:hover {
+            transform: scale(1.02);
+        }
+
+        .image-label {
+            font-size: 0.95em;
+            color: #666;
+            margin-top: 12px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .offsets {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .offset-value {
+            display: inline-block;
+            margin: 5px 10px 5px 0;
+            padding: 3px 8px;
+            background: white;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .offset-value.green {
+            color: #27ae60;
+            border-left: 3px solid #27ae60;
+        }
+
+        .offset-value.red {
+            color: #e74c3c;
+            border-left: 3px solid #e74c3c;
+        }
+
+        .analysis {
+            background: #e8f4f8;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        .analysis h4 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+
+        .analysis p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+
+        .analysis p:last-child {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 40px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .image-pair {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .image-pair img {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <a href="../index.html" class="nav-back">← Back to Portfolio</a>
+            <h1>Project 1: Colorizing the Prokudin-Gorskii Photo Collection</h1>
+            <p>Automatic alignment and colorization of glass plate negatives</p>
+        </header>
+
+        <div class="content">
+            <div class="overview">
+                <h2>Project Description</h2>
+                <p>The goal of this project was to reconstruct color photographs from the digitized glass plate images of Sergei Mikhailovich Prokudin-Gorskii. Each plate contains three separate grayscale exposures taken through blue, green, and red filters, stacked vertically. By separating the channels, aligning them correctly, and combining them into a single RGB image, we can recover visually compelling color images of early 20th-century Russia.</p>
+            </div>
+
+            <div style="margin: 40px 0;"></div>
+
+            <div class="part">
+                <h2>Part 1: Single-Scale Implementation</h2>
+                <p>Implementation using simple displacement search for smaller images (glass plates).</p>
+                
+                <div class="images-grid">
+                    <div class="image-comparison">
+                        <div class="image-title">Cathedral</div>
+                        <div class="image-pair">
+                            <div>
+                                <img src="single-scale-pics/cathedral_original.jpg" alt="Cathedral Original">
+                                <div class="image-label">Original</div>
+                            </div>
+                            <div>
+                                <img src="single-scale-pics/cathedral_aligned.jpg" alt="Cathedral Aligned">
+                                <div class="image-label">Aligned</div>
+                            </div>
+                        </div>
+                        <div class="offsets">
+                            <span class="offset-value green">Green: (2, 5)</span>
+                            <span class="offset-value red">Red: (3, 12)</span>
+                        </div>
+                    </div>
+
+                    <div class="image-comparison">
+                        <div class="image-title">Monastery</div>
+                        <div class="image-pair">
+                            <div>
+                                <img src="single-scale-pics/monastery_original.jpg" alt="Monastery Original">
+                                <div class="image-label">Original</div>
+                            </div>
+                            <div>
+                                <img src="single-scale-pics/monastery_aligned.jpg" alt="Monastery Aligned">
+                                <div class="image-label">Aligned</div>
+                            </div>
+                        </div>
+                        <div class="offsets">
+                            <span class="offset-value green">Green: (2, -3)</span>
+                            <span class="offset-value red">Red: (2, 3)</span>
+                        </div>
+                    </div>
+
+                    <div class="image-comparison">
+                        <div class="image-title">Tobolsk</div>
+                        <div class="image-pair">
+                            <div>
+                                <img src="single-scale-pics/tobolsk_original.jpg" alt="Tobolsk Original">
+                                <div class="image-label">Original</div>
+                            </div>
+                            <div>
+                                <img src="single-scale-pics/tobolsk_aligned.jpg" alt="Tobolsk Aligned">
+                                <div class="image-label">Aligned</div>
+                            </div>
+                        </div>
+                        <div class="offsets">
+                            <span class="offset-value green">Green: (3, 3)</span>
+                            <span class="offset-value red">Red: (3, 6)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analysis">
+                    <h4>Single-Scale Alignment with NCC:</h4>
+                    
+                    <p>For my initial implementation, I used a single-scale exhaustive search method to align the green and red channels to the blue channel. The steps were:</p>
+                    
+                    <p><strong>Channel Extraction</strong> – The input image was divided into three equal parts (B, G, R).</p>
+                    
+                    <p><strong>Search Window</strong> – For each channel (G and R), I searched over a displacement window of [-15, 15] pixels in both x and y directions.</p>
+                    
+                    <p><strong>Alignment Metric (NCC)</strong> – To score alignments, I used Normalized Cross-Correlation (NCC). The implementation first flattens both images into vectors, then normalizes each vector by subtracting its mean and dividing by its standard deviation. Each candidate shift was applied using np.roll.</p>
+                    
+                    <p><strong>Best Offset Selection</strong> – The displacement with the maximum NCC score was chosen as the optimal alignment.</p>
+                    
+                    <p><strong>Reconstruction</strong> – Using the selected offsets, the channels were stacked back together into a single aligned RGB image.</p>
+                    
+                    <p>This approach worked well for the smaller .jpg images like monastery.jpg and cathedral.jpg, but it failed to align the larger images like emir.tif and harvesters.tif.</p>
+                </div>
+            </div>
+
+            <div class="part">
+                <h2>Part 2: Multi-Scale Implementation</h2>
+                <p>Pyramid-based approach for larger images using recursive alignment at multiple scales.</p>
+                
+                <div class="images-grid">
+                    <div class="image-comparison">
+                        <div class="image-title">Cathedral</div>
+                        <div class="image-pair">
+                            <div>
+                                <img src="multi-scale-pics/cathedral_original.jpg" alt="Cathedral Original">
+                                <div class="image-label">Original</div>
+                            </div>
+                            <div>
+                                <img src="multi-scale-pics/cathedral_aligned.jpg" alt="Cathedral Aligned">
+                                <div class="image-label">Aligned</div>
+                            </div>
+                        </div>
+                        <div class="offsets">
+                            <span class="offset-value green">Green: (5, 2)</span>
+                            <span class="offset-value red">Red: (12, 3)</span>
+                        </div>
+                    </div>
+
+                    <div class="image-comparison">
+                        <div class="image-title">Church</div>
+                        <div class="image-pair">
+                            <div>
+                                <img src="multi-scale-pics/church_original.jpg" alt="Church Original">
+                                <div class="image-label">Original</div>
+                            </div>
+                            <div>
+                                <img src="multi-scale-pics/church_aligned.jpg" alt="Church Aligned">
+                                <div class="image-label">Aligned</div>
+                            </div>
+                        </div>
+                        <div class="offsets">
+                            <span class="offset-value green">Green: (25, 4)</span>
+                            <span class="offset-value red">Red: (58, -4)</span>
+                        </div>
+                    </div>
+
+                    <div class="image-comparison">
+                        <div class="image-title">Emir</div>
+                        <div class="image-pair">
+                            <div>
+                                <img src="multi-scale-pics/emir_original.jpg" alt="Emir Original">
+                                <div class="image-label">Original</div>
+                            </div>
+                            <div>
+                                <img src="multi-scale-pics/emir_aligned.jpg" alt="Emir Aligned">
+                                <div class="image-label">Aligned</div>
+                            </div>
+                        </div>
+                        <div class="offsets">
+                            <span class="offset-value green">Green: (49, 24)</span>
+                            <span class="offset-value red">Red: (107, 40)</span>
+                        </div>
+                    </div>
+
+                    <div class="image-comparison">
+                        <div class="image-title">Harvesters</div>
+                        <div class="image-pair">
+                            <div>
+                                <img src="multi-scale-pics/harvesters_original.jpg" alt="Harvesters Original">
+                                <div class="image-label">Original</div>
+                            </div>
+                            <div>
+                                <img src="multi-scale-pics/harvesters_aligned.jpg" alt="Harvesters Aligned">
+                                <div class="image-label">Aligned</div>
+                            </div>
+                        </div>
+                        <div class="offsets">
+                            <span class="offset-value green">Green: (59, 16)</span>
+                            <span class="offset-value red">Red: (124, 13)</span>
+                        </div>
+                    </div>
+
+                    <div class="image-comparison">
+                        <div class="image-title">Icon</div>
+                        <div class="image-pair">
+                            <div>
+                                <img src="multi-scale-pics/icon_original.jpg" alt="Icon Original">
+                                <div class="image-label">Original</div>
+                            </div>
+                            <div>
+                                <img src="multi-scale-pics/icon_aligned.jpg" alt="Icon Aligned">
+                                <div class="image-label">Aligned</div>
+                            </div>
+                        </div>
+                        <div class="offsets">
+                            <span class="offset-value green">Green: (41, 17)</span>
+                            <span class="offset-value red">Red: (89, 23)</span>
+                        </div>
+                    </div>
+
+                    <div class="image-comparison">
+                        <div class="image-title">Italil</div>
+                        <div class="image-pair">
+                            <div>
+                                <img src="multi-scale-pics/italil_original.jpg" alt="Italil Original">
+                                <div class="image-label">Original</div>
+                            </div>
+                            <div>
+                                <img src="multi-scale-pics/italil_aligned.jpg" alt="Italil Aligned">
+                                <div class="image-label">Aligned</div>
+                            </div>
+                        </div>
+                        <div class="offsets">
+                            <span class="offset-value green">Green: (49, 8)</span>
+                            <span class="offset-value red">Red: (105, 11)</span>
+                        </div>
+                    </div>
+
+                    <div class="image-comparison">
+                        <div class="image-title">Self Portrait</div>
+                        <div class="image-pair">
+                            <div>
+                                <img src="multi-scale-pics/self_portrait_original.jpg" alt="Self Portrait Original">
+                                <div class="image-label">Original</div>
+                            </div>
+                            <div>
+                                <img src="multi-scale-pics/self_portrait_aligned.jpg" alt="Self Portrait Aligned">
+                                <div class="image-label">Aligned</div>
+                            </div>
+                        </div>
+                        <div class="offsets">
+                            <span class="offset-value green">Green: (78, 29)</span>
+                            <span class="offset-value red">Red: (176, 37)</span>
+                        </div>
+                    </div>
+
+                    <div class="image-comparison">
+                        <div class="image-title">Three Generations</div>
+                        <div class="image-pair">
+                            <div>
+                                <img src="multi-scale-pics/three_generations_original.jpg" alt="Three Generations Original">
+                                <div class="image-label">Original</div>
+                            </div>
+                            <div>
+                                <img src="multi-scale-pics/three_generations_aligned.jpg" alt="Three Generations Aligned">
+                                <div class="image-label">Aligned</div>
+                            </div>
+                        </div>
+                        <div class="offsets">
+                            <span class="offset-value green">Green: (53, 14)</span>
+                            <span class="offset-value red">Red: (112, 11)</span>
+                        </div>
+                    </div>
+
+                    <div class="image-comparison">
+                        <div class="image-title">Melons</div>
+                        <div class="image-pair">
+                            <div>
+                                <img src="multi-scale-pics/melons_original.jpg" alt="Melons Original">
+                                <div class="image-label">Original</div>
+                            </div>
+                            <div>
+                                <img src="multi-scale-pics/melons_aligned.jpg" alt="Melons Aligned">
+                                <div class="image-label">Aligned</div>
+                            </div>
+                        </div>
+                        <div class="offsets">
+                            <span class="offset-value green">Green: (81, 10)</span>
+                            <span class="offset-value red">Red: (178, 13)</span>
+                        </div>
+                    </div>
+
+                    <div class="image-comparison">
+                        <div class="image-title">Lastochikino</div>
+                        <div class="image-pair">
+                            <div>
+                                <img src="multi-scale-pics/lastochikino_original.jpg" alt="Lastochikino Original">
+                                <div class="image-label">Original</div>
+                            </div>
+                            <div>
+                                <img src="multi-scale-pics/lastochikino_aligned.jpg" alt="Lastochikino Aligned">
+                                <div class="image-label">Aligned</div>
+                            </div>
+                        </div>
+                        <div class="offsets">
+                            <span class="offset-value green">Green: (51, 27)</span>
+                            <span class="offset-value red">Red: (117, 34)</span>
+                        </div>
+                    </div>
+
+                    <div class="image-comparison">
+                        <div class="image-title">Siren</div>
+                        <div class="image-pair">
+                            <div>
+                                <img src="multi-scale-pics/siren_original.jpg" alt="Siren Original">
+                                <div class="image-label">Original</div>
+                            </div>
+                            <div>
+                                <img src="multi-scale-pics/siren_aligned.jpg" alt="Siren Aligned">
+                                <div class="image-label">Aligned</div>
+                            </div>
+                        </div>
+                        <div class="offsets">
+                            <span class="offset-value green">Green: (41, 16)</span>
+                            <span class="offset-value red">Red: (87, 23)</span>
+                        </div>
+                    </div>
+
+                    <div class="image-comparison">
+                        <div class="image-title">Lugano</div>
+                        <div class="image-pair">
+                            <div>
+                                <img src="multi-scale-pics/lugano_original.jpg" alt="Lugano Original">
+                                <div class="image-label">Original</div>
+                            </div>
+                            <div>
+                                <img src="multi-scale-pics/lugano_aligned.jpg" alt="Lugano Aligned">
+                                <div class="image-label">Aligned</div>
+                            </div>
+                        </div>
+                        <div class="offsets">
+                            <span class="offset-value green">Green: (64, 11)</span>
+                            <span class="offset-value red">Red: (134, 13)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analysis">
+                    <h4>Multi-Scale Pyramid Alignment:</h4>
+                    
+                    <p>For the larger .tif images, I implemented a multi-scale pyramid alignment to make the search faster and more reliable. The idea was to downsample the images into a pyramid, align at the coarsest level where displacements are small relative to image size, and then refine as I move back up to higher resolutions.</p>
+                    
+                    <p><strong>At the smallest scale</strong> I searched over a wide window (±15).</p>
+                    
+                    <p><strong>At mid scales</strong> the window was reduced (±5).</p>
+                    
+                    <p><strong>At the finest scales</strong> only a small window (±2) was used.</p>
+                    
+                    <p>After each level, the offset was doubled so it carried correctly to the next resolution.</p>
+                    
+                    <p>To score alignments I used normalized cross-correlation (NCC) on cropped regions (ignoring 10% borders), which avoids border noise and keeps the matching stable. This worked well for most of the provided images and gave me clean alignments with reasonable offsets in under a minute.</p>
+                    
+                    <p><strong>One exception was the Emir of Bukhara.</strong> The channels have very different brightness, so NCC on raw pixels failed. I improved this by running Sobel edge detection first and aligning based on edges, which was more robust since it compares structure rather than intensity.</p>
+                </div>
+            </div>
+
+            <div class="part">
+                <h2>Additional Results</h2>
+                <p>Here are three additional images processed with the multi-scale pyramid alignment approach.</p>
+                
+                <div class="images-grid">
+                    <div class="image-comparison">
+                        <div class="image-title">Borodino</div>
+                        <div class="image-pair">
+                            <div>
+                                <img src="multi-scale-pics/borodino_original.jpg" alt="Borodino Original">
+                                <div class="image-label">Original</div>
+                            </div>
+                            <div>
+                                <img src="multi-scale-pics/borodino_aligned.jpg" alt="Borodino Aligned">
+                                <div class="image-label">Aligned</div>
+                            </div>
+                        </div>
+                        <div class="offsets">
+                            <span class="offset-value green">Green: (-1, 56)</span>
+                            <span class="offset-value red">Red: (0, 124)</span>
+                        </div>
+                    </div>
+
+                    <div class="image-comparison">
+                        <div class="image-title">Milan Church</div>
+                        <div class="image-pair">
+                            <div>
+                                <img src="multi-scale-pics/milan_church_original.jpg" alt="Milan Church Original">
+                                <div class="image-label">Original</div>
+                            </div>
+                            <div>
+                                <img src="multi-scale-pics/milan_church_aligned.jpg" alt="Milan Church Aligned">
+                                <div class="image-label">Aligned</div>
+                            </div>
+                        </div>
+                        <div class="offsets">
+                            <span class="offset-value green">Green: (12, 57)</span>
+                            <span class="offset-value red">Red: (24, 125)</span>
+                        </div>
+                    </div>
+
+                    <div class="image-comparison">
+                        <div class="image-title">Reika Suna</div>
+                        <div class="image-pair">
+                            <div>
+                                <img src="multi-scale-pics/reika_suna_original.jpg" alt="Reika Suna Original">
+                                <div class="image-label">Original</div>
+                            </div>
+                            <div>
+                                <img src="multi-scale-pics/reika_suna_aligned.jpg" alt="Reika Suna Aligned">
+                                <div class="image-label">Aligned</div>
+                            </div>
+                        </div>
+                        <div class="offsets">
+                            <span class="offset-value green">Green: (16, 34)</span>
+                            <span class="offset-value red">Red: (24, 124)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
