@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Project 2: Fun with Filters and Frequencies</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .nav-back {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-back:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .overview {
+            background: #f8f9fa;
+            padding: 35px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            border-left: 5px solid #3498db;
+        }
+
+        .overview h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.6em;
+        }
+
+        .overview p {
+            line-height: 1.8;
+            font-size: 1.05em;
+        }
+
+        .part {
+            margin-bottom: 50px;
+            padding: 35px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .part p {
+            margin-bottom: 18px;
+            line-height: 1.7;
+        }
+
+        .part p:last-of-type {
+            margin-bottom: 25px;
+        }
+
+        .part h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 15px;
+        }
+
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .image-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        .image-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .image-card img {
+            width: 100%;
+            max-width: 350px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .image-card img:hover {
+            transform: scale(1.02);
+        }
+
+        .code-section {
+            background: #2d3748;
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: auto;
+        }
+
+        .code-section h4 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .code-section img {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+        }
+
+        .highlight h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .analysis {
+            background: #e8f4f8;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        .analysis h4 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+
+        .analysis p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+
+        .analysis p:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-explanation {
+            background: #f1f3f4;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #34a853;
+        }
+
+        .filter-explanation h4 {
+            color: #137333;
+            margin-bottom: 10px;
+        }
+
+        .filter-explanation p {
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 40px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+
+            .images-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <a href="../index.html" class="nav-back">← Back to Portfolio</a>
+            <h1>Project 2: Fun with Filters and Frequencies</h1>
+            <p>2D Convolutions, Filtering, and Image Processing</p>
+        </header>
+
+        <div class="content">
+            <div class="overview">
+                <h2>Project Description</h2>
+                <p>This comprehensive project explores 2D convolutions, filtering, and frequency domain image processing techniques. I implement convolution from scratch using both four-loop and two-loop approaches, comparing performance with optimized libraries. The project covers finite difference operators for edge detection, Gaussian and Derivative of Gaussian (DoG) filters, and explores frequency domain techniques including unsharp masking for image sharpening. I create hybrid images that change interpretation with viewing distance, blending high and low frequency components from different sources. Additionally, I implement Gaussian and Laplacian image pyramids for multiresolution blending, creating seamless composites like the legendary "Oraple" (apple + orange) and dynamic day-to-night transitions. Throughout, I analyze computational complexity, threshold selection, and perceptual effects of various filtering operations on real images including selfies, architectural landmarks, and natural scenes.</p>
+            </div>
+
+            <div style="margin: 40px 0;"></div>
+
+            <div class="part">
+                <h2>Part 1.1: Convolutions from Scratch</h2>
+                <p>We implement convolution operations manually using numpy, experimenting with different approaches and understanding how padding affects the results.</p>
+                
+
+                <div class="code-section">
+                    <h4>Four-Loop Convolution Implementation</h4>
+                    <img src="results/1.png" alt="Four-loop implementation screenshot" style="max-width: 65%;">
+                </div>
+
+                <div class="code-section">
+                    <h4>Two-Loop Convolution Implementation</h4>
+                    <img src="results/2.png" alt="Two-loop implementation screenshot" style="max-width: 65%;">
+                </div>
+
+                <div class="code-section">
+                    <h4>Performance Comparison</h4>
+                    <img src="results/3.png" alt="Comparison between 4 loops, 2 loops and convolve2d">
+                </div>
+
+                <div class="analysis">
+                    <h4>Runtime Analysis:</h4>
+                    <p><strong>4-loop implementation:</strong> O(H×W×k_h×k_w) where H,W are image dimensions and k_h,k_w are kernel dimensions.</p>
+                    <p><strong>2-loop implementation:</strong> Same complexity but with better memory access patterns, using numpy broadcasting for inner computation.</p>
+                    <p><strong>scipy.signal.convolve2d:</strong> Highly optimized implementation using compiled C code, Fast Fourier Transform (FFT) for large kernels, and efficient memory management.</p>
+                    <p><strong>Performance observations:</strong> For small images like mine, the 4-loop version was actually faster than the 2-loop version, likely because the overhead of creating numpy views in the 2-loop case offsets the benefits for small image sizes. For larger images, the 2-loop version becomes faster. Both implementations are significantly slower than scipy regardless, likely because scipy is compiled to use C++ for the inner loops.</p>
+                </div>
+
+                <div class="code-section">
+                    <h4>Convolution of Selfie with DX and DY</h4>
+                    <p>Applying the finite difference operators to my selfie to demonstrate edge detection.</p>
+                </div>
+
+                <div class="images-grid">
+                    <div class="image-card" style="text-align: center;">
+                        <img src="results/4.png" alt="DX of selfie" style="max-width: 750px;">
+                        <div class="image-title">DX Filter Result</div>
+                    </div>
+                </div>
+
+                <div class="images-grid">
+                    <div class="image-card" style="text-align: center;">
+                        <img src="results/5.png" alt="DY of selfie" style="max-width: 750px;">
+                        <div class="image-title">DY Filter Result</div>
+                    </div>
+                </div>
+
+                <div class="analysis">
+                    <p>As you can tell, Image_dx is compressed along the image width (thus vertical lines are more visible), whereas Image_dy is compressed along the image height (thus horizontal lines are more visible).</p>
+                </div>
+            </div>
+
+            <div class="part">
+                <h2>Part 1.2: Finite Difference Operator</h2>
+                <p>We compute partial derivatives in x and y directions of the cameraman image using finite difference operators D_x and D_y. Then we calculate the gradient magnitude and create a binarized edge image.</p>
+
+                <div class="images-grid">
+                    <div class="image-card">
+                        <div class="image-title">Cameraman DX and DY</div>
+                        <img src="results/6.png" alt="Cameraman partial derivatives">
+                    </div>
+                    <div class="image-card">
+                        <div class="image-title">Gradient Magnitude</div>
+                        <img src="results/7.png" alt="Cameraman gradient magnitude">
+                    </div>
+                    <div class="image-card">
+                        <div class="image-title">Binarized Edge Image (Threshold: 0.5)</div>
+                        <img src="results/8.png" alt="Cameraman edges with threshold 0.5">
+                    </div>
+                </div>
+
+                <div class="analysis">
+                    <h4>Threshold Selection Analysis:</h4>
+                    <p>I tested several threshold values for binarizing the gradient magnitude image. A threshold of 0.5 provides a good balance between preserving important edge details while suppressing noise. Higher thresholds (0.6-0.8) removed too many fine edges, while lower thresholds (0.2-0.3) introduced excessive noise. The choice of 0.5 maintains the major structural features of the cameraman image while creating clean, well-defined edges.</p>
+                </div>
+            </div>
+
+            <div class="part">
+                <h2>Part 1.3: Derivative of Gaussian (DoG) Filter</h2>
+                <p>We noted that the results with just the difference operator were rather noisy. Luckily, we have a smoothing operator handy: the Gaussian filter G. Create a blurred version of the original image by convolving with a gaussian and repeat the procedure in the previous part. Now we can do the same thing with a single convolution instead of two by creating derivative of gaussian filters. Convolve the gaussian with D_x and D_y and display the resulting DoG filters as images.</p>
+
+                <div class="images-grid">
+                    <div class="image-card">
+                        <div class="image-title">Cameraman Gaussian</div>
+                        <img src="results/9.png" alt="Cameraman gaussian blurred">
+                    </div>
+                </div>
+
+                <div class="code-section">
+                    <h4>Cameraman Gaussian + DX and DY</h4>
+                    <img src="results/10.png" alt="Cameraman gaussian convolve2d dx and dy">
+                </div>
+
+                <div class="images-grid">
+                    <div class="image-card">
+                        <div class="image-title">Cameraman Edges (Threshold: 0.02)</div>
+                        <img src="results/11.png" alt="Cameraman with edges threshold 0.02">
+                    </div>
+                </div>
+
+                <div class="code-section">
+                    <h4>DoG Filter DX and DY</h4>
+                    <img src="results/12.png" alt="DoG filter dx and dy">
+                </div>
+
+                <div class="code-section">
+                    <h4>Comparison: Gaussian+DX/DY vs DoG Filters</h4>
+                    <img src="results/13.png" alt="Comparison between gaussian then dx/dy versus DoG filters">
+                </div>
+
+                <div class="analysis">
+                    <h4>Key Differences Observed:</h4>
+                    <p>The filters do appear to be a bit less precise, which is justified as the gaussian was applied before the gradient magnitude was calculated. While some fine details may be lost due to the blurring effect of the Gaussian filter, the overall edge detection becomes more robust and less susceptible to noise-induced artifacts. For edges with DoG directly, I used 0.4 as the threshold.</p>
+                </div>
+            </div>
+
+            <div class="part">
+                <h2>Part 2: Fun with Frequencies!</h2>
+                <p>In this section, we explore frequency domain techniques and image sharpening through the unsharp masking technique.</p>
+            </div>
+
+            <div class="part">
+                <h2>Part 2.1: Image "Sharpening"</h2>
+                <p>Pick your favorite blurry image and get ready to "sharpen" it! We will derive the unsharp masking technique. Remember our favorite Gaussian filter from class. This is a low pass filter that retains only the low frequencies. We can subtract the blurred version from the original image to get the high frequencies of the image. An image often looks sharper if it has stronger high frequencies. So, lets add a little bit more high frequencies to the image! Combine this into a single convolution operation which is called the unsharp mask filter.</p>
+
+                <div class="images-grid">
+                    <div class="image-card">
+                        <div class="image-title">Formula for I sharp</div>
+                        <img src="results/14.png" alt="Formula for sharp image">
+                    </div>
+                </div>
+
+                <div class="images-grid">
+                    <div class="image-card">
+                        <div class="image-title">Taj Mahal: Original Image</div>
+                        <img src="results/15a.png" alt="Original Taj Mahal">
+                    </div>
+                </div>
+
+                <div class="code-section">
+                    <h4>Taj Mahal: Blurred and High Frequencies (Side by Side)</h4>
+                    <img src="results/15b.png" alt="Blurred and high frequencies" style="max-width: 65%;">
+                </div>
+
+                <div class="code-section">
+                    <h4>Taj Mahal: Sharpening with Different Alpha Values</h4>
+                    <img src="results/15c.png" alt="Taj with different alphas" style="max-width: 65%;">
+                </div>
+
+                <div class="analysis">
+                    <h4>Unsharp Mask Technique:</h4>
+                    <p>The unsharp mask filter enhances image sharpness by emphasizing high-frequency components through a three-step process:</p>
+                    <p><strong>Step 1:</strong> Apply Gaussian blur to create a low-pass filtered version of the image, preserving only smooth, gradual variations.</p>
+                    <p><strong>Step 2:</strong> Subtract the blurrified image from the original to extract high-frequency details (original - low-pass = high frequencies remaining).</p>
+                    <p><strong>Step 3:</strong> Add amplified high-frequency components back to the original image, making edges and textures more pronounced while maintaining overall image structure.</p>
+                </div>
+
+                <div class="code-section">
+                    <h4>Taylor Fritz at Laver Cup - Sharpness at Different Alphas</h4>
+                    <img src="results/16.png" alt="Taylor Fritz sharpness variations">
+                    <p style="margin-top: 15px;">Sharpening the image enhances the edges and body muscles of the player!</p>
+                </div>
+
+                <div class="code-section">
+                    <h4>Mountains: Original → Blurred → Resharpened</h4>
+                    <img src="results/17.png" alt="Mountains blur and resharpening">
+                    <p style="margin-top: 15px;">Blurring and then sharpening the blurred image doesn't bring back the original image! This illustrates an important limitation of the unsharp masking process - the reconstruction is imperfect and some image information is permanently lost during the blurring operation.</p>
+                </div>
+
+            </div>
+
+            <div class="part">
+                <h2>Part 2.2: Hybrid Images</h2>
+                <p>The goal of this part is to create hybrid images using the approach described in the SIGGRAPH 2006 paper by Oliva, Torralba, and Schyns. Hybrid images are static images that change in interpretation as a function of the viewing distance. The basic idea is that high frequency tends to dominate perception when it is available, but, at a distance, only the low frequency (smooth) part of the signal can be seen. By blending the high frequency portion of one image with the low-frequency portion of another, you get a hybrid image that leads to different interpretations at different distances.</p>
+
+                <div class="code-section">
+                    <h4>Process Overview: Derek + Nutmeg Hybrid</h4>
+                    <p>Creating hybrid images involves low-pass filtering one image (to capture low frequencies) and high-pass filtering another image (to capture high frequencies), then combining them. For the Derek and Nutmeg example, Derek's image provides the low frequencies (visible at distance) while Nutmeg's image provides the high frequencies (visible up close).</p>
+                </div>
+
+                <div class="code-section">
+                    <h4>Step 1: Aligned Derek (left) and Nutmeg (right)</h4>
+                    <img src="results/18.png" alt="Aligned Derek and Nutmeg" style="max-width: 65%;">
+                </div>
+
+                <div class="code-section">
+                    <h4>Step 2: Derek Original vs Low-Pass (Blurred)</h4>
+                    <img src="results/19.png" alt="Derek original vs low-pass" style="max-width: 65%;">
+                </div>
+
+                <div class="code-section">
+                    <h4>Step 3: Derek Fourier: Original vs Low-Pass</h4>
+                    <img src="results/20.png" alt="Derek Fourier transforms" style="max-width: 42.25%;">
+                </div>
+
+                <div class="code-section">
+                    <h4>Step 4: Nutmeg Original vs High-Pass (Edges)</h4>
+                    <img src="results/21.png" alt="Nutmeg original vs high-pass" style="max-width: 42.25%;">
+                </div>
+
+                <div class="code-section">
+                    <h4>Step 5: Nutmeg Fourier: Original vs High-Pass</h4>
+                    <img src="results/22.png" alt="Nutmeg Fourier transforms" style="max-width: 42.25%;">
+                </div>
+
+                <div class="code-section">
+                    <h4>Step 6: Low-Pass Derek vs High-Pass Nutmeg</h4>
+                    <img src="results/23.png" alt="Low-pass Derek vs high-pass Nutmeg" style="max-width: 42.25%;">
+                </div>
+
+                <div class="code-section">
+                    <h4>Step 7: Hybrid Derek+Nutmeg and Frequency Spectrum</h4>
+                    <img src="results/24.png" alt="Final hybrid and frequency analysis" style="max-width: 42.25%;">
+                </div>
+
+                <div class="analysis">
+                    <h4>Hybrid Image Analysis:</h4>
+                    <p>The hybrid image synthesis process demonstrates how frequency domain manipulation can create perceptual illusions. At close viewing distances, Nutmeg's high-frequency details (edges, facial features) are dominant. At further distances, Derek's low-frequency content (overall shape and form) becomes more visible. The Fourier transforms reveal how the frequency components are preserved in each filtered image.</p>
+                </div>
+
+                <div class="code-section">
+                    <h4>Day/Night Skyline Hybrid Process</h4>
+                    <p>Creating a day-to-night skyline hybrid demonstrating temporal transformation through frequency manipulation.</p>
+                </div>
+
+                <div class="code-section">
+                    <h4>Step A: Day Skyline vs Low-Pass (Blurred)</h4>
+                    <img src="results/25a.png" alt="Day skyline vs low-pass" style="max-width: 65%;">
+                </div>
+
+                <div class="code-section">
+                    <h4>Step B: Fourier - Original Day Skyline vs Low-Pass</h4>
+                    <img src="results/25b.png" alt="Day skyline Fourier transforms" style="max-width: 65%;">
+                </div>
+
+                <div class="code-section">
+                    <h4>Step C: Night Skyline vs High-Pass (Edges)</h4>
+                    <img src="results/25c.png" alt="Night skyline vs high-pass" style="max-width: 65%;">
+                </div>
+
+                <div class="code-section">
+                    <h4>Step D: Fourier - Original Night Skyline vs High-Pass</h4>
+                    <img src="results/25d.png" alt="Night skyline Fourier transforms" style="max-width: 65%;">
+                </div>
+
+                <div class="code-section">
+                    <h4>Step E: Low-Pass Day Skyline vs High-Pass Night Skyline</h4>
+                    <img src="results/25e.png" alt="Low-pass day vs high-pass night" style="max-width: 65%;">
+                </div>
+
+                <div class="code-section">
+                    <h4>Final Result: Hybrid Day+Night Skyline with Frequency Spectrum</h4>
+                    <img src="results/25.png" alt="Final hybrid skyline with frequency spectrum" style="max-width: 65%;">
+                    <p style="margin-top: 15px;">The New York day skyline provides the low-frequency foundation (visible from distance), while the New York night skyline adds high-frequency detail elements (visible up close). This looks absolutely amazing - the temporal transformation effect is stunning!</p>
+                </div>
+
+                <div class="images-grid">
+                    <div class="image-card" style="text-align: center;">
+                        <img src="results/mahir.jpg" alt="Mahir original" style="max-width: 250px;">
+                        <div class="image-title">Mahir<br>(Original)</div>
+                    </div>
+                    <div class="image-card" style="text-align: center;">
+                        <img src="results/26.png" alt="Hybrid result" style="max-width: 250px;">
+                        <div class="image-title">Hybrid Result</div>
+                    </div>
+                    <div class="image-card" style="text-align: center;">
+                        <img src="results/dhairya.jpg" alt="Dhairya original" style="max-width: 250px;">
+                        <div class="image-title">Dhairya<br>(Original)</div>
+                    </div>
+                </div>
+
+
+                <div class="analysis">
+                    <p style="text-align: center;">In this hybrid image, I'm blending my face with my brother Dhairya's face using the frequency domain technique! At different viewing distances, you can see either my facial features or his features emerge.</p>
+                    <p style="text-align: center;">The result wasn't quite as amazing as I was hoping for it to be, but it's still interesting to see how the facial features blend together!</p>
+                </div>
+
+                <div class="images-grid">
+                    <div class="image-card">
+                        <div class="image-title">Original Clock Image</div>
+                        <img src="results/27.png" alt="Original clock image">
+                    </div>
+                    <div class="image-card">
+                        <div class="image-title">Original Sun Image</div>
+                        <img src="results/28.png" alt="Original Sun image">
+                    </div>
+                </div>
+
+                <div class="code-section">
+                    <h4>Sun and Clock Hybrid</h4>
+                    <img src="results/29.png" alt="Hybrid of Sun and clock" style="max-width: 50%;">
+                    <p style="margin-top: 15px;">From far away, the clock shape and structure are more prominent, whereas as you zoom in, the sun's bright rays and circular form become more visible!</p>
+                </div>
+
+            </div>
+
+            <div class="part">
+                <h2>Part 2.3: Gaussian and Laplacian Stacks</h2>
+                <p>The Gaussian stack was generated by repeatedly applying a Gaussian blur to the image, while the Laplacian stack was constructed by subtracting successive Gaussian levels.</p>
+
+                <div class="code-section">
+                    <h4>Apple Stacks - Gaussian (Top) and Laplacian (Bottom)</h4>
+                    <img src="results/30.png" alt="Apple Gaussian and Laplacian stacks" style="max-width: 65%;">
+                </div>
+
+                <div class="analysis">
+                    <h4>Apple Stack Analysis:</h4>
+                    <p><strong>Top row (Gaussian L0–L5):</strong> Successive blurring reduces detail while keeping overall structure.</p>
+                    <p><strong>Bottom row (Laplacian L0–L5):</strong> Isolates band-pass features at each level, emphasizing edges and textures of the apple.</p>
+                </div>
+
+                <div class="code-section">
+                    <h4>Orange Stacks - Gaussian (Top) and Laplacian (Bottom)</h4>
+                    <img src="results/31.png" alt="Orange Gaussian and Laplacian stacks" style="max-width: 65%;">
+                </div>
+
+                <div class="analysis">
+                    <h4>Orange Stack Analysis:</h4>
+                    <p><strong>Top row (Gaussian L0–L5):</strong> Progressive smoothing removes high-frequency surface details of the orange.</p>
+                    <p><strong>Bottom row (Laplacian L0–L5):</strong> Captures fine-to-coarse edge details, highlighting texture differences across scales.</p>
+                </div>
+            </div>
+
+            <div class="part">
+                <h2>Part 2.4: Multiresolution Blending (The Oraple!)</h2>
+                <p>Using the Laplacian stacks of both apple and orange, weighted by a Gaussian mask at each level, the two images were blended together. At each resolution level, blending was computed using multiresolution techniques to create seamless transitions.</p>
+
+                <div class="code-section">
+                    <h4>Apple vs Orange Laplacian Levels with Blended Contributions</h4>
+                    <img src="results/32.png" alt="Apple vs Orange Laplacian blending" style="max-width: 65%;">
+                </div>
+
+                <div class="analysis">
+                    <h4>Multiresolution Blending Process:</h4>
+                    <p><strong>Left column:</strong> Apple's Laplacian contributions reveal fine details and textures.</p>
+                    <p><strong>Middle column:</strong> Orange's Laplacian contributions highlight surface patterns and edges.</p>
+                    <p><strong>Right column:</strong> Combined Laplacian levels and reconstruction show progressively blending.</p>
+                </div>
+
+                <div class="code-section">
+                    <h4>Final "Oraple" - Apple + Orange Multiresolution Blend</h4>
+                    <img src="results/33.png" alt="Multiresolution blended Oraple" style="max-width: 65%;">
+                </div>
+
+
+            </div>
+
+            <div class="part">
+                <h2>Additional Multiresolution Blends</h2>
+                <p>Exploring multiresolution blending techniques with different masks and image pairs.</p>
+
+                <div class="code-section">
+                    <h4>Eiffel Tower Day/Night Blend</h4>
+                    <img src="results/35.png" alt="Eiffel Tower day night blend" style="width: 100%;">
+                </div>
+
+                <div class="analysis">
+                    <h4>Eiffel Tower Blend Analysis:</h4>
+                    <p>Day and night images of the Eiffel Tower were blended with a vertical mask. The Laplacian stacks allowed smooth transition between day and night lighting conditions, producing a single image where one side shows the tower in daylight and the other side at night.</p>
+                </div>
+
+                <div class="code-section">
+                    <h4>Tree Branches & Sunset Blend Process</h4>
+                    <img src="results/36.png" alt="Tree branches sunset blend" style="max-width: 42.25%;">
+                </div>
+
+                <div class="code-section">
+                    <h4>Final Result: Tree Branches & Sunset Blend</h4>
+                    <img src="results/37.png" alt="Final tree branches sunset blend">
+                </div>
+
+                <div class="analysis">
+                    <h4>Tree Branches Blend Analysis:</h4>
+                    <p>My irregular mask works like a silhouette extraction: it isolates the dark tree branches while replacing the bright sky with the sunset. By building Gaussian stacks on the mask, the boundaries are softened at multiple frequency levels, so the transition looks seamless even with an irregular, non-linear shape.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
