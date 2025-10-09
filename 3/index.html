@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Programming Project #3A — Image Warping and Mosaicing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            line-height: 1.6;
+            color: #333;
+            background: white;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #003262 0%, #1f77b4 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+            margin-bottom: 5px;
+        }
+
+        .header .course {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .nav-back {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-back:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .toc {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            border-left: 6px solid #003262;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .toc h2 {
+            color: #003262;
+            margin-bottom: 25px;
+            font-size: 1.6em;
+            text-align: center;
+            border-bottom: 2px solid #1f77b4;
+            padding-bottom: 15px;
+        }
+
+        .toc-blocks {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .toc-block {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 4px solid #1f77b4;
+        }
+
+        .toc-block:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .toc-block a {
+            color: #003262;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1em;
+            display: block;
+            text-align: center;
+        }
+
+        .toc-block a:hover {
+            color: #1f77b4;
+        }
+
+        .section {
+            margin-bottom: 50px;
+            padding: 35px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .section h2 {
+            color: #003262;
+            margin-bottom: 25px;
+            font-size: 1.6em;
+            border-bottom: 2px solid #1f77b4;
+            padding-bottom: 10px;
+        }
+
+        .section p {
+            margin-bottom: 18px;
+            line-height: 1.7;
+            text-align: justify;
+        }
+
+        .image-pair {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            align-items: flex-start;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .image-pair > div {
+            flex: 1;
+            min-width: 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .image-pair img {
+            width: 100%;
+            max-width: 450px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .image-pair img:hover {
+            transform: scale(1.03);
+        }
+
+        .image-caption {
+            font-style: italic;
+            color: #666;
+            margin-top: 15px;
+            font-size: 0.95em;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .image-title {
+            font-weight: bold;
+            color: #003262;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            border-left: 4px solid #1f77b4;
+        }
+
+        .code-block h4 {
+            color: #e2e8f0;
+            margin-bottom: 15px;
+            font-family: Georgia, 'Times New Roman', serif;
+        }
+
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .math-equation {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            text-align: center;
+            font-family: 'Times New Roman', serif;
+            border-left: 4px solid #34a853;
+            overflow-x: auto;
+        }
+
+        .math-equation h4 {
+            color: #137333;
+            margin-bottom: 15px;
+            font-family: Georgia, 'Times New Roman', serif;
+        }
+
+        .math-equation .matrix {
+            display: inline-block;
+            margin: 10px;
+            vertical-align: middle;
+        }
+
+        .matrix {
+            display: inline-block;
+            margin: 10px;
+            vertical-align: middle;
+        }
+
+        .matrix-bracket {
+            display: inline-block;
+            height: 120px;
+            border: 2px solid #333;
+            margin: 0 5px;
+            vertical-align: top;
+        }
+
+        .matrix-content {
+            display: inline-block;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .matrix-row {
+            display: block;
+            margin: 5px 0;
+        }
+
+        .analysis {
+            background: #e8f4f8;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 25px 0;
+            border-left: 4px solid #1f77b4;
+        }
+
+        .analysis h4 {
+            color: #003262;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .analysis p {
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .analysis p:last-child {
+            margin-bottom: 0;
+        }
+
+        .single-image {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .single-image img {
+            max-width: 80%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .single-image img:hover {
+            transform: scale(1.02);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .toc-blocks {
+                grid-template-columns: 1fr;
+            }
+            
+            .image-pair {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .image-pair img {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <a href="../index.html" class="nav-back">← Back to Portfolio</a>
+            <h1>Programming Project #3A — Image Warping and Mosaicing</h1>
+            <p class="course">CS180: Intro to Computer Vision and Computational Photography</p>
+        </header>
+
+        <div class="content">
+            <div class="toc">
+                <h2>Table of Contents</h2>
+                <div class="toc-blocks">
+                    <div class="toc-block">
+                        <a href="#a1">A.1 Shoot the Pictures</a>
+                    </div>
+                    <div class="toc-block">
+                        <a href="#a2">A.2 Recover Homographies</a>
+                    </div>
+                    <div class="toc-block">
+                        <a href="#a3">A.3 Warp the Images</a>
+                    </div>
+                    <div class="toc-block">
+                        <a href="#a4">A.4 Blend Images into a Mosaic</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section" id="a1">
+                <h2>A.1 Shoot the Pictures</h2>
+                <p>Displayed below are 3 of the many image pairs I took for this project. Each pair has a fixed center of projection so that the transforms between them are projective, with some overlap in the middle to find correspondences.</p>
+
+                <div class="image-title">Coffee Shop Interior</div>
+                <div class="image-pair">
+                    <div>
+                        <img src="original-photos/coffee-left.jpg" alt="Coffee shop left view">
+                        <div class="image-caption">Left View</div>
+                    </div>
+                    <div>
+                        <img src="original-photos/coffee-right.jpg" alt="Coffee shop right view">
+                        <div class="image-caption">Right View</div>
+                    </div>
+                </div>
+
+                <div class="image-title">Haas Business School Bear</div>
+                <div class="image-pair">
+                    <div>
+                        <img src="original-photos/haas-left.jpg" alt="Haas Business School Bear left view">
+                        <div class="image-caption">Left View</div>
+                    </div>
+                    <div>
+                        <img src="original-photos/haas-mid.jpg" alt="Haas Business School Bear middle view">
+                        <div class="image-caption">Middle View</div>
+                    </div>
+                    <div>
+                        <img src="original-photos/haas-right.jpg" alt="Haas Business School Bear right view">
+                        <div class="image-caption">Right View</div>
+                    </div>
+                </div>
+
+                <div class="image-title">Room Interior</div>
+                <div class="image-pair">
+                    <div>
+                        <img src="original-photos/room-left.jpg" alt="Room interior left view">
+                        <div class="image-caption">Left View</div>
+                    </div>
+                    <div>
+                        <img src="original-photos/room-right.jpg" alt="Room interior right view">
+                        <div class="image-caption">Right View</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section" id="a2">
+                <h2>A.2 Recover Homographies</h2>
+
+                <div class="image-title">Haas Business School Bear - Point Correspondences</div>
+                <div class="single-image">
+                    <img src="data/haas-left.png" alt="Haas left with point correspondences">
+                    <div class="image-caption">Haas Left View with 16 corresponding points</div>
+                </div>
+
+                <div class="image-title">Coffee Shop - Point Correspondences</div>
+                <div class="single-image">
+                    <img src="data/coffee.png" alt="Coffee shop with point correspondences">
+                    <div class="image-caption">Coffee Shop with 12 corresponding points</div>
+                </div>
+
+                <div class="image-title">Coffee Shop - System of Equations</div>
+                <div class="single-image">
+                    <img src="data/final-coffee-equation.png" alt="Coffee shop system of equations">
+                    <div class="image-caption">Linear system of equations for coffee shop homography computation</div>
+                </div>
+
+                <div class="image-title">Coffee Shop - Computed Homography Matrix</div>
+                <div class="single-image">
+                    <img src="data/final-coffee-homography.png" alt="Coffee shop homography matrix">
+                    <div class="image-caption">Final computed homography matrix for coffee shop transformation</div>
+                </div>
+
+                <div class="image-title">Room Interior - Point Correspondences</div>
+                <div class="single-image">
+                    <img src="data/room.png" alt="Room with point correspondences">
+                    <div class="image-caption">Room Interior with 10 corresponding points</div>
+                </div>
+
+                <div class="image-title">Computed Homography Matrices</div>
+                
+                <div class="analysis">
+                    <h4>Analysis:</h4>
+                    <p>I used Pixsy to find the correct coordinates, the red dots represent the coordinates that we are projecting, the cross values are the coordinates we projected onto, and the blue values are the ground truth values!</p>
+                    
+                    <p>The computed homography matrices show reasonable transformations with the bottom-right element set to 1.0 as expected. Using more than 4 correspondences creates an overdetermined system that is solved using least squares, providing robustness against noise in manual point selection. The translation components (third column) indicate the spatial shifts needed to align the images.</p>
+                </div>
+            </div>
+
+            <div class="section" id="a3">
+                <h2>A.3 Warp the Images (Inverse Mapping)</h2>
+                <p>Given H that maps source→target (p' = Hp), I create an output canvas, iterate over target pixels, map each location back with H⁻¹ into the source, and sample using bilinear interpolation. I also produce an alpha mask to signal valid samples.</p>
+
+                <div class="analysis">
+                    <h4>Process:</h4>
+                    <p><strong>Canvas sizing:</strong> Transform the four source corners through H to get a tight bounding box, or accept a fixed output shape.</p>
+                    <p><strong>Grid back-projection:</strong> Make a meshgrid over destination pixels, convert to homogeneous, and map back with H⁻¹ to get subpixel source coordinates.</p>
+                    <p><strong>Bilinear interpolation:</strong> Weighted 4-neighborhood sampling provides smoother results than nearest-neighbor by averaging surrounding pixel values, reducing aliasing artifacts and creating more natural-looking warped images.</p>
+                    <p><strong>Validity mask:</strong> Mark pixels whose back-projected coordinates fall inside the source and are finite; return this as alpha for blending.</p>
+                </div>
+
+                <div class="analysis">
+                    <h4>Rectification:</h4>
+                    <p>I click four corners of a planar rectangle in top left → top right → bottom right → bottom left order. I estimate the target width/height from the clicked edge lengths, define a canonical rectangle [0,0] to [W-1,H-1], solve H = computeH(src, dst), and inverse-warp. This validates both computeH and the warpers.</p>
+                </div>
+
+                <div class="image-title">Rectification Results</div>
+                <div class="single-image">
+                    <img src="data/nyc.png" alt="NYC rectification">
+                    <div class="image-caption">NYC Lego Rectification</div>
+                </div>
+
+                <div class="single-image">
+                    <img src="data/painting.png" alt="Painting rectification">
+                    <div class="image-caption">Painting Rectification</div>
+                </div>
+
+                <div class="single-image">
+                    <img src="data/horse.png" alt="Horse rectification">
+                    <div class="image-caption">Horse Painting Rectification</div>
+                </div>
+
+                <div class="single-image">
+                    <img src="data/signage.png" alt="Signage rectification">
+                    <div class="image-caption">Signage Rectification</div>
+                </div>
+
+                <div class="analysis">
+                    <h4>Interpolation Quality:</h4>
+                    <p>Bilinear interpolation produces smoother, sharper, and more appealing results compared to nearest-neighbor sampling. By averaging the four surrounding pixels with distance-weighted coefficients, bilinear interpolation eliminates the pixelated artifacts and jagged edges that characterize nearest-neighbor sampling, resulting in more natural-looking warped images with better visual continuity.</p>
+                </div>
+            </div>
+
+            <div class="section" id="a4">
+                <h2>A.4 Blend Images into a Mosaic</h2>
+                <p>Show 3 mosaics with source images. Use weighted averaging or blending to reduce edge artifacts. Explain your procedure.</p>
+
+                <div class="image-title">Haas Business School Bear Mosaic</div>
+                <div class="single-image">
+                    <img src="data/haas-left-warp.png" alt="Haas left warped">
+                    <div class="image-caption">Haas Left Warped</div>
+                </div>
+
+                <div class="single-image">
+                    <img src="data/haas-mid-warp.png" alt="Haas mid warped">
+                    <div class="image-caption">Haas Mid Warped</div>
+                </div>
+
+                <div class="single-image">
+                    <img src="data/haas-right-warp.png" alt="Haas right warped">
+                    <div class="image-caption">Haas Right Warped</div>
+                </div>
+
+                <div class="single-image">
+                    <img src="data/haas-mosaic.png" alt="Haas mosaic">
+                    <div class="image-caption">Haas Mosaic</div>
+                </div>
+
+                <div class="image-title">Coffee Shop Mosaic</div>
+                <div class="single-image">
+                    <img src="data/coffe-warp.png" alt="Coffee warped">
+                    <div class="image-caption">Coffee Warped</div>
+                </div>
+
+                <div class="single-image">
+                    <img src="data/coffee-mosaic.png" alt="Coffee mosaic">
+                    <div class="image-caption">Coffee Mosaic</div>
+                </div>
+
+                <div class="image-title">Room Interior Mosaic</div>
+                <div class="single-image">
+                    <img src="data/room-warp.png" alt="Room warped">
+                    <div class="image-caption">Room Warped</div>
+                </div>
+
+                <div class="single-image">
+                    <img src="data/room-mosaic.png" alt="Room mosaic">
+                    <div class="image-caption">Room Mosaic</div>
+                </div>
+
+
+                <div class="analysis">
+                    <h4>Blending Procedure:</h4>
+                    <ul style="margin-left: 20px; line-height: 1.8;">
+                        <li><strong>Computed warped bounds:</strong> Found how far each image moved after applying its homography so the final canvas could fit all warped images.</li>
+                        <li><strong>Translated images to positive coordinates:</strong> Built a translation matrix so all warped images started within the mosaic canvas (no negative coordinates).</li>
+                        <li><strong>Created smooth alpha masks:</strong> Generated a cosine falloff weight from 1 (center) to 0 (edges) for smooth blending between overlapping images.</li>
+                        <li><strong>Warped images and alpha masks:</strong> Used my bilinear warping function to project each image (and its alpha mask) into the mosaic coordinate frame.</li>
+                        <li><strong>Applied feather blending:</strong> Combined all warped images by weighted averaging with their alpha masks to avoid seams and brightness drops.</li>
+                        <li><strong>Computed final mosaic:</strong> Determined the canvas size from warped bounds, translated and warped all images, and blended them using feathering to produce a seamless mosaic.</li>
+                    </ul>
+                    <p>I also experimented with different alpha values for smoother transitions. Feather blending worked really well, so I didn't try Laplacian pyramid blending, but it would be cool to explore next!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
