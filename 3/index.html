@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Programming Project #3A — Image Warping and Mosaicing</title>
+    <title>Programming Project #3 — Image Warping, Mosaicing, and Autostitching</title>
     <style>
         * {
             margin: 0;
@@ -341,7 +341,7 @@
     <div class="container">
         <header class="header">
             <a href="../index.html" class="nav-back">← Back to Portfolio</a>
-            <h1>Programming Project #3A — Image Warping and Mosaicing</h1>
+            <h1>Programming Project #3 — Image Warping, Mosaicing, and Autostitching</h1>
             <p class="course">CS180: Intro to Computer Vision and Computational Photography</p>
         </header>
 
@@ -360,6 +360,18 @@
                     </div>
                     <div class="toc-block">
                         <a href="#a4">A.4 Blend Images into a Mosaic</a>
+                    </div>
+                    <div class="toc-block">
+                        <a href="#b1">B.1 Harris Corner Detection</a>
+                    </div>
+                    <div class="toc-block">
+                        <a href="#b2">B.2 Feature Descriptor Extraction</a>
+                    </div>
+                    <div class="toc-block">
+                        <a href="#b3">B.3 Feature Matching</a>
+                    </div>
+                    <div class="toc-block">
+                        <a href="#b4">B.4 RANSAC for Robust Homography</a>
                     </div>
                 </div>
             </div>
@@ -555,6 +567,204 @@
                         <li><strong>Computed final mosaic:</strong> Determined the canvas size from warped bounds, translated and warped all images, and blended them using feathering to produce a seamless mosaic.</li>
                     </ul>
                     <p>I also experimented with different alpha values for smoother transitions. Feather blending worked really well, so I didn't try Laplacian pyramid blending, but it would be cool to explore next!</p>
+                </div>
+            </div>
+
+            <div class="section" id="b1">
+                <h2>B.1 Harris Corner Detection</h2>
+                <p>This section implements Harris Interest Point Detection and Adaptive Non-Maximal Suppression (ANMS) for detecting robust corner features in images.</p>
+
+                <div class="image-title">Harris Corners with ANMS - Haas Left</div>
+                <div class="single-image">
+                    <img src="data/haas-left-anms.png" alt="Haas left with ANMS corners">
+                    <div class="image-caption">Detected corners after ANMS on Haas left view</div>
+                </div>
+
+                <div class="image-title">Harris Corners with ANMS - Haas Middle</div>
+                <div class="single-image">
+                    <img src="data/haas-mid-anms.png" alt="Haas middle with ANMS corners">
+                    <div class="image-caption">Detected corners after ANMS on Haas middle view</div>
+                </div>
+
+                <div class="image-title">Harris Corners with ANMS - Haas Right</div>
+                <div class="single-image">
+                    <img src="data/haas-right-anms.png" alt="Haas right with ANMS corners">
+                    <div class="image-caption">Detected corners after ANMS on Haas right view</div>
+                </div>
+
+                <div class="analysis">
+                    <h4>Analysis:</h4>
+                    <p><strong>Harris Interest Points:</strong> The Harris detector computes a corner strength function based on the harmonic mean of eigenvalues from the gradient structure tensor:</p>
+                    <p style="text-align: center; font-style: italic; margin: 15px 0;">
+                        f<sub>HM</sub>(x, y) = det H<sub>l</sub>(x, y) / tr H<sub>l</sub>(x, y) = λ<sub>1</sub>λ<sub>2</sub> / (λ<sub>1</sub> + λ<sub>2</sub>)
+                    </p>
+                    <p>Interest points are detected where this corner strength is a local maximum in a 3×3 neighborhood and exceeds a threshold. This produces numerous corner detections throughout the image.</p>
+                    <p><strong>Adaptive Non-Maximal Suppression (ANMS):</strong> To obtain a uniformly distributed set of keypoints, ANMS filters corners by retaining only those that are locally maximal within their neighborhood. Each corner's suppression radius is determined by the distance to its nearest stronger neighbor. By selecting corners with the largest suppression radii, we ensure feature points are spread evenly across the image, avoiding clustering and providing better coverage for subsequent matching.</p>
+                </div>
+            </div>
+
+            <div class="section" id="b2">
+                <h2>B.2 Feature Descriptor Extraction</h2>
+
+                <div class="image-title">Feature Descriptors - Haas Left</div>
+                <div class="single-image">
+                    <img src="data/haas-left-features.png" alt="Haas left feature descriptors">
+                    <div class="image-caption">Extracted 8x8 feature descriptors from Haas left view</div>
+                </div>
+
+                <div class="image-title">Feature Descriptors - Haas Middle</div>
+                <div class="single-image">
+                    <img src="data/haas-mid-features.png" alt="Haas middle feature descriptors">
+                    <div class="image-caption">Extracted 8x8 feature descriptors from Haas middle view</div>
+                </div>
+
+                <div class="image-title">Feature Descriptors - Haas Right</div>
+                <div class="single-image">
+                    <img src="data/haas-right-features.png" alt="Haas right feature descriptors">
+                    <div class="image-caption">Extracted 8x8 feature descriptors from Haas right view</div>
+                </div>
+
+                <div class="analysis">
+                    <h4>Analysis:</h4>
+                    <p>For each corner point identified by ANMS, I extract a 40×40 pixel window centered at the keypoint. This larger window is then downsampled to an 8×8 descriptor by sampling every 5th pixel, which captures the blurred local structure around the corner. The resulting 64-dimensional descriptor is flattened and bias/gain normalized by subtracting the mean and dividing by the standard deviation. This normalization provides invariance to affine intensity changes, making the descriptors robust to lighting variations between images.</p>
+                </div>
+            </div>
+
+            <div class="section" id="b3">
+                <h2>B.3 Feature Matching</h2>
+
+                <div class="image-title">Feature Matches - Haas Left and Middle</div>
+                <div class="single-image">
+                    <img src="data/haas-left-match.png" alt="Haas left and middle feature matches">
+                    <div class="image-caption">Matched features between Haas left and middle views</div>
+                </div>
+
+                <div class="image-title">Feature Matches - Haas Middle and Right</div>
+                <div class="single-image">
+                    <img src="data/haas-right-match.png" alt="Haas middle and right feature matches">
+                    <div class="image-caption">Matched features between Haas middle and right views</div>
+                </div>
+
+                <div class="image-title">Feature Matches - Coffee Shop</div>
+                <div class="single-image">
+                    <img src="data/coffee-match.png" alt="Coffee shop feature matches">
+                    <div class="image-caption">Matched features between coffee shop left and right views</div>
+                </div>
+
+                <div class="image-title">Feature Matches - Room Interior</div>
+                <div class="single-image">
+                    <img src="data/room-match.png" alt="Room interior feature matches">
+                    <div class="image-caption">Matched features between room left and right views</div>
+                </div>
+
+                <div class="image-title">Feature Matches - East Asian Building Left</div>
+                <div class="single-image">
+                    <img src="data/east-asian-left-match.png" alt="East Asian building left feature matches">
+                    <div class="image-caption">Matched features for East Asian building left pair</div>
+                </div>
+
+                <div class="image-title">Feature Matches - East Asian Building Right</div>
+                <div class="single-image">
+                    <img src="data/east-asian-right-match.png" alt="East Asian building right feature matches">
+                    <div class="image-caption">Matched features for East Asian building right pair</div>
+                </div>
+
+                <div class="image-title">Feature Matches - Berkeley A</div>
+                <div class="single-image">
+                    <img src="data/berk-a-match.png" alt="Berkeley A feature matches">
+                    <div class="image-caption">Matched features for Berkeley pair A</div>
+                </div>
+
+                <div class="image-title">Feature Matches - Berkeley B</div>
+                <div class="single-image">
+                    <img src="data/berk-b-match.png" alt="Berkeley B feature matches">
+                    <div class="image-caption">Matched features for Berkeley pair B</div>
+                </div>
+
+                <div class="image-title">Feature Matches - Berkeley C</div>
+                <div class="single-image">
+                    <img src="data/berk-c-match.png" alt="Berkeley C feature matches">
+                    <div class="image-caption">Matched features for Berkeley pair C</div>
+                </div>
+
+                <div class="image-title">Feature Matches - Berkeley D</div>
+                <div class="single-image">
+                    <img src="data/berk-d-match.png" alt="Berkeley D feature matches">
+                    <div class="image-caption">Matched features for Berkeley pair D</div>
+                </div>
+
+                <div class="analysis">
+                    <h4>Analysis:</h4>
+                    <p>The feature matching algorithm uses Lowe's ratio test to identify reliable correspondences between image pairs. For each descriptor in the first image, I compute the squared Euclidean distance to all descriptors in the second image. I then find the two nearest neighbors: the best match and the second-best match. A match is accepted only if the ratio of the best distance to the second-best distance is below a threshold of 0.7, indicating that the best match is significantly better than the second-best. This ratio test effectively filters out ambiguous matches and reduces false positives, as distinctive features will have a clear best match while non-distinctive regions will have similar distances to multiple features.</p>
+                </div>
+            </div>
+
+            <div class="section" id="b4">
+                <h2>B.4 RANSAC for Robust Homography</h2>
+
+                <div class="image-title">Haas Mosaic Comparison - Manual vs Automatic</div>
+                <div class="image-pair">
+                    <div>
+                        <img src="data/haas-mosaic.png" alt="Haas manual mosaic">
+                        <div class="image-caption">Manual Stitching</div>
+                    </div>
+                    <div>
+                        <img src="data/haas-auto-mosaic.png" alt="Haas automatic mosaic">
+                        <div class="image-caption">Automatic Stitching (RANSAC)</div>
+                    </div>
+                </div>
+
+                <div class="image-title">Coffee Shop Mosaic Comparison - Manual vs Automatic</div>
+                <div class="image-pair">
+                    <div>
+                        <img src="data/coffee-mosaic.png" alt="Coffee manual mosaic">
+                        <div class="image-caption">Manual Stitching</div>
+                    </div>
+                    <div>
+                        <img src="data/coffee-auto-mosaic.png" alt="Coffee automatic mosaic">
+                        <div class="image-caption">Automatic Stitching (RANSAC)</div>
+                    </div>
+                </div>
+
+                <div class="analysis">
+                    <p>For images like this one where many corners and surfaces look similar, automatic stitching can be challenging. The feature matching algorithm may struggle to distinguish between repetitive patterns, leading to incorrect correspondences. In such cases, manual stitching might produce more reliable results since a human can better understand the scene context. I experimented with different error thresholds in RANSAC to find the right balance between accepting enough inliers while rejecting false matches.</p>
+                </div>
+
+                <div class="image-title">Room Interior Mosaic Comparison - Manual vs Automatic</div>
+                <div class="image-pair">
+                    <div>
+                        <img src="data/room-mosaic.png" alt="Room manual mosaic">
+                        <div class="image-caption">Manual Stitching</div>
+                    </div>
+                    <div>
+                        <img src="data/room-auto-mosaic.png" alt="Room automatic mosaic">
+                        <div class="image-caption">Automatic Stitching (RANSAC)</div>
+                    </div>
+                </div>
+
+                <div class="analysis">
+                    <h4>Sharpness Comparison:</h4>
+                    <p>The automatic stitching produced a noticeably sharper result compared to the manual stitching. This is likely because manual point correspondence selection can introduce small human errors in the mappings, leading to slight misalignments that cause blurriness in the blended regions. The RANSAC-based automatic approach, by optimizing over many feature matches and selecting the best homography, achieves more precise alignment and thus a crisper final mosaic.</p>
+                </div>
+
+                <div class="image-title">East Asian Building Mosaic</div>
+                <div class="single-image">
+                    <img src="data/east-asian-mosaic.png" alt="East Asian building mosaic" style="max-width: 40%;">
+                    <div class="image-caption">East Asian Building Automatic Mosaic</div>
+                </div>
+
+                <div class="image-title">Berkeley Campus Mosaic</div>
+                <div class="single-image">
+                    <img src="data/berk-auto-mosaic.png" alt="Berkeley campus mosaic" style="max-width: 50%;">
+                    <div class="image-caption">Berkeley Campus Automatic Mosaic</div>
+                </div>
+
+                <div class="analysis">
+                    <h4>RANSAC Implementation:</h4>
+                    <p>I implemented 4-point RANSAC from scratch to compute robust homography estimates. The algorithm works by randomly selecting 4 feature matches, computing a homography from those points, and then counting how many of the remaining matches are consistent with that homography (inliers). This process repeats for many iterations, keeping track of the homography with the most inliers. For each candidate homography, I project points from one image to the other and measure the reprojection error. Matches with error below a threshold are considered inliers. After testing all iterations, the best homography is recomputed using all the inliers, which provides a robust estimate even in the presence of outliers from incorrect feature matches.</p>
+                    
+                    <h4>Multi-Image Stitching:</h4>
+                    <p>The Berkeley Campus mosaic demonstrates the power of automatic stitching with 5 images. The algorithm handled the sequential alignment efficiently with good runtime performance, producing a seamless panorama. This would have been significantly more challenging with manual calibration, where selecting dozens of correspondence points across multiple image pairs would be tedious and error-prone. The automatic approach scaled well and delivered impressive results.</p>
                 </div>
             </div>
         </div>
