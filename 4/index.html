@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Project 4: Neural Radiance Fields (NeRF)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .nav-back {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-back:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .overview {
+            background: #f8f9fa;
+            padding: 35px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            border-left: 5px solid #3498db;
+        }
+
+        .overview h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.6em;
+        }
+
+        .overview p {
+            line-height: 1.8;
+            font-size: 1.05em;
+            margin-bottom: 15px;
+        }
+
+        .part {
+            margin-bottom: 50px;
+            padding: 35px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .part h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 15px;
+        }
+
+        .part h3 {
+            color: #3498db;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .part h4 {
+            color: #2c3e50;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .part p {
+            margin-bottom: 18px;
+            line-height: 1.7;
+        }
+
+        .part ul, .part ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        .part li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .architecture-box {
+            background: #e8f4f8;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        .architecture-box h4 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+
+        .architecture-box ul {
+            margin-left: 20px;
+        }
+
+        .code-block {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .image-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .image-caption {
+            font-style: italic;
+            color: #666;
+            margin-top: 15px;
+            font-size: 0.95em;
+        }
+
+        .progression-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .progression-item {
+            text-align: center;
+        }
+
+        .progression-item img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .progression-item img:hover {
+            transform: scale(1.02);
+        }
+
+        .progression-label {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-top: 12px;
+            font-size: 1.05em;
+        }
+
+        .hyperparameter-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+
+        .hyper-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .hyper-item img {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .hyper-label {
+            font-weight: bold;
+            color: #3498db;
+            font-size: 1em;
+        }
+
+        .findings-box {
+            background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border-left: 4px solid #27ae60;
+        }
+
+        .findings-box h4 {
+            color: #27ae60;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .findings-box ul {
+            margin-left: 20px;
+        }
+
+        .findings-box li {
+            margin-bottom: 8px;
+        }
+
+        .camera-viz {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .camera-viz img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 40px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+
+            .progression-grid,
+            .hyperparameter-grid,
+            .camera-viz {
+                grid-template-columns: 1fr;
+            }
+
+            .image-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <a href="../index.html" class="nav-back">← Back to Portfolio</a>
+            <h1>Project 4: Neural Radiance Fields (NeRF)</h1>
+            <p>3D Scene Reconstruction and Neural Field Representations</p>
+        </header>
+
+        <div class="content">
+            <div class="overview">
+                <h2>Project Overview</h2>
+                <p>This project explores Neural Radiance Fields (NeRF), a powerful technique for representing 3D scenes using neural networks. The project is divided into two main parts: first, we learn to work with neural fields in 2D by fitting an MLP to represent images, then we apply camera calibration techniques to prepare data for full 3D NeRF reconstruction.</p>
+            </div>
+
+            <!-- Part 0 -->
+            <div class="part">
+                <h2>Part 0: Calibrating Your Camera and Capturing a 3D Scan</h2>
+                
+                <p>In this part, we capture a 3D scan of a coffee tumbler using ArUco tags for visual tracking and camera calibration. The process involves camera calibration, object scanning, pose estimation, and dataset preparation for NeRF training.</p>
+
+                <h3>Camera Pose Visualization</h3>
+                <p>Below are screenshots from Viser showing the cloud of camera frustums with their estimated poses and captured images of the coffee tumbler:</p>
+                
+                <div class="camera-viz">
+                    <div>
+                        <img src="images/part0/viser1.png" alt="Camera frustums visualization 1">
+                        <div class="image-caption">Camera frustums showing pose estimation from different viewpoints</div>
+                    </div>
+                    <div>
+                        <img src="images/part0/viser2.png" alt="Camera frustums visualization 2">
+                        <div class="image-caption">Alternative view of the camera pose cloud</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Part 1 -->
+            <div class="part">
+                <h2>Part 1: Neural Field (2D Image)</h2>
+                
+                <p>Before tackling 3D NeRF, we start with a 2D neural field that learns to represent an image. This involves training a Multi-Layer Perceptron (MLP) with positional encoding to map 2D pixel coordinates to RGB colors.</p>
+
+                <h3>1. Model Architecture</h3>
+                
+                <div class="architecture-box">
+                    <h4>Network Architecture</h4>
+                    <ul>
+                        <li><strong>Type:</strong> Multi-Layer Perceptron (MLP)</li>
+                        <li><strong>Layers:</strong> 3 (2 hidden layers + 1 output layer)</li>
+                        <li><strong>Hidden Width:</strong> 256 (default) / 64 (variant)</li>
+                        <li><strong>Activations:</strong> ReLU (hidden layers), Sigmoid (output)</li>
+                        <li><strong>Input Dimension:</strong> 42 (after positional encoding)</li>
+                        <li><strong>Output Dimension:</strong> 3 (RGB)</li>
+                        <li><strong>Total Parameters:</strong> 143,363 (L=10, width=256)</li>
+                    </ul>
+                </div>
+
+                <div class="architecture-box">
+                    <h4>Training Hyperparameters</h4>
+                    <ul>
+                        <li><strong>Learning Rate:</strong> 1e-2</li>
+                        <li><strong>Optimizer:</strong> Adam</li>
+                        <li><strong>Loss Function:</strong> MSE (Mean Squared Error)</li>
+                        <li><strong>Batch Size:</strong> 10,000 pixels per iteration</li>
+                        <li><strong>Iterations:</strong> 2000</li>
+                        <li><strong>Metric:</strong> PSNR (Peak Signal-to-Noise Ratio)</li>
+                    </ul>
+                </div>
+
+                <h3>2. Training Progression on Test Image</h3>
+                <p>Below is the training progression on the provided test image (wolf.jpg) using L=10 and width=256:</p>
+                
+                <div class="progression-grid">
+                    <div class="progression-item">
+                        <img src="images/part1/iteration_100_L10_hidden256.png" alt="Iteration 100">
+                        <div class="progression-label">Iteration 100</div>
+                    </div>
+                    <div class="progression-item">
+                        <img src="images/part1/iteration_500_L10_hidden256.png" alt="Iteration 500">
+                        <div class="progression-label">Iteration 500</div>
+                    </div>
+                    <div class="progression-item">
+                        <img src="images/part1/iteration_1000_L10_hidden256.png" alt="Iteration 1000">
+                        <div class="progression-label">Iteration 1000</div>
+                    </div>
+                    <div class="progression-item">
+                        <img src="images/part1/iteration_2000_L10_hidden256.png" alt="Iteration 2000">
+                        <div class="progression-label">Iteration 2000 (Final)</div>
+                    </div>
+                </div>
+
+                <h3>3. PSNR Training Curve</h3>
+                <p>The Peak Signal-to-Noise Ratio (PSNR) measures reconstruction quality. Higher PSNR indicates better image quality:</p>
+                
+                <div class="image-container">
+                    <img src="images/part1/psnr_curve.png" alt="PSNR training curve">
+                    <div class="image-caption">PSNR curve showing reconstruction quality improvement over training iterations</div>
+                </div>
+
+                <h3>4. Hyperparameter Comparison</h3>
+                <p>We compare four different configurations by varying positional encoding frequency (L) and network width:</p>
+                
+                <div class="image-container">
+                    <img src="images/part1/hyperparameter_comparison.png" alt="Hyperparameter comparison grid">
+                    <div class="image-caption">2×2 grid comparing different combinations of L (frequency) and width</div>
+                </div>
+
+                <div class="hyperparameter-grid">
+                    <div class="hyper-item">
+                        <img src="images/part1/L5_hidden64/iteration_2000_L5_hidden64.png" alt="L=5, Width=64">
+                        <div class="hyper-label">L = 5, Width = 64</div>
+                    </div>
+                    <div class="hyper-item">
+                        <img src="images/part1/L5_hidden256/iteration_2000_L5_hidden256.png" alt="L=5, Width=256">
+                        <div class="hyper-label">L = 5, Width = 256</div>
+                    </div>
+                    <div class="hyper-item">
+                        <img src="images/part1/L10_hidden64/iteration_2000_L10_hidden64.png" alt="L=10, Width=64">
+                        <div class="hyper-label">L = 10, Width = 64</div>
+                    </div>
+                    <div class="hyper-item">
+                        <img src="images/part1/L10_hidden256/iteration_2000_L10_hidden256.png" alt="L=10, Width=256">
+                        <div class="hyper-label">L = 10, Width = 256</div>
+                    </div>
+                </div>
+
+                <div class="findings-box">
+                    <h4>Key Findings</h4>
+                    <ul>
+                        <li><strong>Higher PE Frequency (L=10):</strong> Captures more detail and produces sharper edges</li>
+                        <li><strong>Wider MLP (256):</strong> Better reconstruction quality and capacity to represent complex patterns</li>
+                        <li><strong>Lower L + Low Width:</strong> Results in blurred output due to limited model capacity</li>
+                        <li><strong>Best Combination:</strong> L=10 with Width=256 provides optimal balance of detail and quality</li>
+                        <li><strong>Positional Encoding Importance:</strong> PE enables the network to learn high-frequency details that would be difficult to capture with raw coordinates alone</li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <!-- Part 2 -->
+            <div class="part">
+                <h2>Part 2: Neural Radiance Field (3D NeRF)</h2>
+                
+                <p>Building on the 2D neural field from Part 1, we now implement a full 3D Neural Radiance Field (NeRF) that learns to represent a 3D scene from multiple 2D views. This involves ray generation, point sampling along rays, and volume rendering to synthesize novel views.</p>
+
+                <h3>Ray and Sample Visualization</h3>
+                <p>Below are 3D visualizations using Viser showing camera frustums, sampled rays, and 3D points along those rays for the Lego dataset:</p>
+                
+                <div class="camera-viz">
+                    <div>
+                        <img src="images/part2/viser1.png" alt="Ray visualization 1">
+                        <div class="image-caption">Camera frustums with sampled rays and 3D points</div>
+                    </div>
+                    <div>
+                        <img src="images/part2/viser2.png" alt="Ray visualization 2">
+                        <div class="image-caption">Alternative view showing ray sampling from training cameras</div>
+                    </div>
+                </div>
+
+                <h3>Training Progression on Lego Dataset</h3>
+                <p>The training progression shows the network learning to render novel views of the Lego scene. Each image shows ground truth (top row) vs predicted (bottom row) for the 6 validation images:</p>
+                
+                <div class="progression-grid">
+                    <div class="progression-item">
+                        <img src="images/part2/iteration_100.png" alt="Iteration 100">
+                        <div class="progression-label">Iteration 100</div>
+                    </div>
+                    <div class="progression-item">
+                        <img src="images/part2/iteration_250.png" alt="Iteration 250">
+                        <div class="progression-label">Iteration 250</div>
+                    </div>
+                    <div class="progression-item">
+                        <img src="images/part2/iteration_500.png" alt="Iteration 500">
+                        <div class="progression-label">Iteration 500</div>
+                    </div>
+                    <div class="progression-item">
+                        <img src="images/part2/iteration_750.png" alt="Iteration 750">
+                        <div class="progression-label">Iteration 750</div>
+                    </div>
+                </div>
+
+                <h3>PSNR Training Curve</h3>
+                <p>The validation PSNR shows steady improvement, reaching the target of 23+ dB:</p>
+                
+                <div class="image-container">
+                    <img src="images/part2/psnr_curve.png" alt="NeRF PSNR training curve">
+                    <div class="image-caption">Validation PSNR curve on 6 held-out views reaching 23+ dB</div>
+                </div>
+
+                <h3>Volume Rendering and GIF of Lego Bulldozer</h3>
+                <p>After training, the NeRF can render the scene from arbitrary camera positions. Below is a spherical rendering around the Lego bulldozer using the test camera trajectory:</p>
+                
+                <div class="image-container">
+                    <video controls autoplay loop muted style="max-width: 80%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <source src="images/part2/test_video.mp4" type="video/mp4">
+                        <img src="images/part2/test_video.gif" alt="Novel view synthesis">
+                    </video>
+                    <div class="image-caption">360° spherical rendering of the Lego bulldozer from novel viewpoints</div>
+                </div>
+
+                <div class="findings-box">
+                    <h4>Key Implementation Highlights</h4>
+                    <ul>
+                        <li><strong>3D Scene Representation:</strong> NeRF learns a continuous volumetric representation from just 2D images</li>
+                        <li><strong>View-Dependent Effects:</strong> Conditioning on ray direction enables modeling of specular highlights and reflections</li>
+                        <li><strong>Volume Rendering:</strong> Proper alpha compositing with transmittance produces photorealistic images</li>
+                        <li><strong>Stratified Sampling:</strong> Perturbed sampling points along rays help capture fine details</li>
+                        <li><strong>Novel View Synthesis:</strong> Trained NeRF can render views from camera positions never seen during training</li>
+                        <li><strong>Target Achievement:</strong> Successfully reached 23+ PSNR on validation set, demonstrating high-quality 3D reconstruction</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Part 2.6 -->
+            <div class="part">
+                <h2>Part 2.6: Training with My Own Data</h2>
+                
+                <p>Using the coffee tumbler dataset captured and calibrated in Part 0, I trained a NeRF to reconstruct the 3D scene. This involved adapting the hyperparameters and scene bounds to work with real-world captured data rather than the synthetic Lego dataset.</p>
+
+                <h3>Hyperparameter Adjustments</h3>
+                <div class="architecture-box">
+                    <h4>Key Changes for Real Data</h4>
+                    <ul>
+                        <li><strong>Scene Bounds:</strong> Adjusted near and far planes to match the real-world scale (near=0.02, far=0.5 instead of 2.0 and 6.0)</li>
+                        <li><strong>Samples per Ray:</strong> Initially trained with 32 samples for debugging, then increased to 64 for final results</li>
+                        <li><strong>Image Resolution:</strong> Ensured images were appropriately sized and intrinsics matrix matched the resolution</li>
+                        <li><strong>Training Duration:</strong> Extended training to ~2000 iterations to achieve good reconstruction quality</li>
+                    </ul>
+                </div>
+
+                <h3>Training Progression</h3>
+                <p>The following images show the NeRF learning to reconstruct the coffee tumbler over the course of training:</p>
+                
+                <div class="progression-grid">
+                    <div class="progression-item">
+                        <img src="images/my_data_results/iteration_100.png" alt="Iteration 100">
+                        <div class="progression-label">Iteration 100</div>
+                    </div>
+                    <div class="progression-item">
+                        <img src="images/my_data_results/iteration_250.png" alt="Iteration 250">
+                        <div class="progression-label">Iteration 250</div>
+                    </div>
+                    <div class="progression-item">
+                        <img src="images/my_data_results/iteration_500.png" alt="Iteration 500">
+                        <div class="progression-label">Iteration 500</div>
+                    </div>
+                    <div class="progression-item">
+                        <img src="images/my_data_results/iteration_1000.png" alt="Iteration 1000">
+                        <div class="progression-label">Iteration 1000</div>
+                    </div>
+                    <div class="progression-item">
+                        <img src="images/my_data_results/iteration_1500.png" alt="Iteration 1500">
+                        <div class="progression-label">Iteration 1500</div>
+                    </div>
+                    <div class="progression-item">
+                        <img src="images/my_data_results/iteration_2000.png" alt="Iteration 2000">
+                        <div class="progression-label">Iteration 2000 (Final)</div>
+                    </div>
+                </div>
+
+                <h3>Training Metrics</h3>
+                <p>The following curves show the training progress over iterations:</p>
+                
+                <div class="image-grid">
+                    <div class="image-container">
+                        <img src="images/my_data_results/loss.png" alt="Training loss curve">
+                        <div class="image-caption">Training loss curve showing convergence</div>
+                    </div>
+                    <div class="image-container">
+                        <img src="images/my_data_results/psnr.png" alt="PSNR curve">
+                        <div class="image-caption">PSNR curve showing reconstruction quality improvement</div>
+                    </div>
+                </div>
+
+                <h3>Rendering of Coffee Tumbler</h3>
+                <p>After training, the NeRF can render novel views of the coffee tumbler from arbitrary camera positions. Below is a 360° circular camera path around the object:</p>
+                
+                <div class="image-container">
+                    <video controls autoplay loop muted style="max-width: 80%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <source src="images/my_data_results/novel_views.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="image-caption">360° circular rendering around the coffee tumbler showing novel viewpoints</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
+
