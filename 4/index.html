@@ -379,24 +379,24 @@
                     </ul>
                 </div>
 
-                <h3>2. Training Progression on Test Image</h3>
-                <p>Below is the training progression on the provided test image (wolf.jpg) using L=10 and width=256:</p>
+                <h3>2. Training Progression on Provided Test Image (Wolf)</h3>
+                <p>Below is the training progression on the provided test image using L=10 and width=256:</p>
                 
                 <div class="progression-grid">
                     <div class="progression-item">
-                        <img src="images/part1/iteration_100_L10_hidden256.png" alt="Iteration 100">
+                        <img src="images/part1_wolf/iteration_100_L10_hidden256.png" alt="Iteration 100">
                         <div class="progression-label">Iteration 100</div>
                     </div>
                     <div class="progression-item">
-                        <img src="images/part1/iteration_500_L10_hidden256.png" alt="Iteration 500">
+                        <img src="images/part1_wolf/iteration_500_L10_hidden256.png" alt="Iteration 500">
                         <div class="progression-label">Iteration 500</div>
                     </div>
                     <div class="progression-item">
-                        <img src="images/part1/iteration_1000_L10_hidden256.png" alt="Iteration 1000">
+                        <img src="images/part1_wolf/iteration_1000_L10_hidden256.png" alt="Iteration 1000">
                         <div class="progression-label">Iteration 1000</div>
                     </div>
                     <div class="progression-item">
-                        <img src="images/part1/iteration_2000_L10_hidden256.png" alt="Iteration 2000">
+                        <img src="images/part1_wolf/iteration_2000_L10_hidden256.png" alt="Iteration 2000">
                         <div class="progression-label">Iteration 2000 (Final)</div>
                     </div>
                 </div>
@@ -405,7 +405,7 @@
                 <p>The Peak Signal-to-Noise Ratio (PSNR) measures reconstruction quality. Higher PSNR indicates better image quality:</p>
                 
                 <div class="image-container">
-                    <img src="images/part1/psnr_curve.png" alt="PSNR training curve">
+                    <img src="images/part1_wolf/psnr_curve.png" alt="PSNR training curve">
                     <div class="image-caption">PSNR curve showing reconstruction quality improvement over training iterations</div>
                 </div>
 
@@ -413,25 +413,25 @@
                 <p>We compare four different configurations by varying positional encoding frequency (L) and network width:</p>
                 
                 <div class="image-container">
-                    <img src="images/part1/hyperparameter_comparison.png" alt="Hyperparameter comparison grid">
+                    <img src="images/part1_wolf/hyperparameter_comparison.png" alt="Hyperparameter comparison grid">
                     <div class="image-caption">2×2 grid comparing different combinations of L (frequency) and width</div>
                 </div>
 
                 <div class="hyperparameter-grid">
                     <div class="hyper-item">
-                        <img src="images/part1/L5_hidden64/iteration_2000_L5_hidden64.png" alt="L=5, Width=64">
+                        <img src="images/part1_wolf/L5_hidden64/iteration_2000_L5_hidden64.png" alt="L=5, Width=64">
                         <div class="hyper-label">L = 5, Width = 64</div>
                     </div>
                     <div class="hyper-item">
-                        <img src="images/part1/L5_hidden256/iteration_2000_L5_hidden256.png" alt="L=5, Width=256">
+                        <img src="images/part1_wolf/L5_hidden256/iteration_2000_L5_hidden256.png" alt="L=5, Width=256">
                         <div class="hyper-label">L = 5, Width = 256</div>
                     </div>
                     <div class="hyper-item">
-                        <img src="images/part1/L10_hidden64/iteration_2000_L10_hidden64.png" alt="L=10, Width=64">
+                        <img src="images/part1_wolf/L10_hidden64/iteration_2000_L10_hidden64.png" alt="L=10, Width=64">
                         <div class="hyper-label">L = 10, Width = 64</div>
                     </div>
                     <div class="hyper-item">
-                        <img src="images/part1/L10_hidden256/iteration_2000_L10_hidden256.png" alt="L=10, Width=256">
+                        <img src="images/part1_wolf/L10_hidden256/iteration_2000_L10_hidden256.png" alt="L=10, Width=256">
                         <div class="hyper-label">L = 10, Width = 256</div>
                     </div>
                 </div>
@@ -445,6 +445,47 @@
                         <li><strong>Best Combination:</strong> L=10 with Width=256 provides optimal balance of detail and quality</li>
                         <li><strong>Positional Encoding Importance:</strong> PE enables the network to learn high-frequency details that would be difficult to capture with raw coordinates alone</li>
                     </ul>
+                </div>
+
+                <h3>5. Results on Golden Gate Bridge</h3>
+                <p>The neural field successfully learned to represent the Golden Gate Bridge image, demonstrating its ability to generalize to different content types and complexity levels:</p>
+                
+                <div class="image-container">
+                    <img src="images/part_1_ggb/iteration_2000_L10_hidden256.png" alt="Golden Gate Bridge final result" style="max-width: 70%;">
+                    <div class="image-caption">Final reconstruction of the Golden Gate Bridge after 2000 iterations</div>
+                </div>
+
+                <div class="findings-box">
+                    <h4>Observations on Custom Image</h4>
+                    <ul>
+                        <li><strong>Architectural Details:</strong> The network successfully captured the bridge's suspension cables and tower structure</li>
+                        <li><strong>Color Gradients:</strong> Smooth representation of sky gradients and water reflections</li>
+                        <li><strong>Fine Details:</strong> With L=10 positional encoding, the model preserved intricate structural elements</li>
+                        <li><strong>Convergence:</strong> Training progression showed steady improvement from blurry initialization to sharp final result</li>
+                        <li><strong>Generalization:</strong> Same hyperparameters worked well on both wolf and bridge images, demonstrating robustness</li>
+                    </ul>
+                </div>
+
+                <h3>6. Training Progression on Custom Image (Golden Gate Bridge)</h3>
+                <p>Training progression on a custom image of the Golden Gate Bridge using the same hyperparameters (L=10, width=256):</p>
+                
+                <div class="progression-grid">
+                    <div class="progression-item">
+                        <img src="images/part_1_ggb/iteration_100_L10_hidden256.png" alt="GGB Iteration 100">
+                        <div class="progression-label">Iteration 100</div>
+                    </div>
+                    <div class="progression-item">
+                        <img src="images/part_1_ggb/iteration_500_L10_hidden256.png" alt="GGB Iteration 500">
+                        <div class="progression-label">Iteration 500</div>
+                    </div>
+                    <div class="progression-item">
+                        <img src="images/part_1_ggb/iteration_1000_L10_hidden256.png" alt="GGB Iteration 1000">
+                        <div class="progression-label">Iteration 1000</div>
+                    </div>
+                    <div class="progression-item">
+                        <img src="images/part_1_ggb/iteration_2000_L10_hidden256.png" alt="GGB Iteration 2000">
+                        <div class="progression-label">Iteration 2000 (Final)</div>
+                    </div>
                 </div>
 
             </div>
