@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Project 5: The Power of Diffusion Models - Part A</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #ffffff;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background: #000000;
+            color: #ffffff;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 30px 0;
+            border-right: 1px solid #333;
+        }
+
+        .sidebar-header {
+            padding: 0 30px 30px 30px;
+            border-bottom: 1px solid #333;
+            margin-bottom: 30px;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #ffffff;
+        }
+
+        .sidebar-header p {
+            font-size: 0.85em;
+            color: #999;
+        }
+
+        .nav-back {
+            display: inline-block;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+            padding: 8px 0;
+            transition: color 0.2s ease;
+        }
+
+        .nav-back:hover {
+            color: #ccc;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-menu li {
+            margin: 0;
+        }
+
+        .nav-menu a {
+            display: block;
+            color: #cccccc;
+            text-decoration: none;
+            padding: 12px 30px;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            position: relative;
+        }
+
+        .nav-menu a:hover {
+            background: #1a1a1a;
+            color: #ffffff;
+            border-left-color: #666;
+        }
+
+        .nav-menu a.active {
+            background: #1a1a1a;
+            color: #ffffff;
+            border-left-color: #ffffff;
+            font-weight: 500;
+        }
+
+        .nav-menu .nav-section {
+            padding: 15px 30px 8px 30px;
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .nav-menu .nav-subsection {
+            padding-left: 50px;
+            font-size: 0.85em;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 0;
+        }
+
+        .header {
+            background: #000000;
+            color: #ffffff;
+            padding: 60px 60px 40px 60px;
+            border-bottom: 1px solid #333;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            color: #999;
+        }
+
+        .content {
+            padding: 60px;
+            max-width: 1200px;
+        }
+
+        .part {
+            margin-bottom: 80px;
+            padding: 0;
+            scroll-margin-top: 20px;
+        }
+
+        .part h2 {
+            color: #000000;
+            margin-bottom: 30px;
+            font-size: 2em;
+            font-weight: 300;
+            letter-spacing: -0.5px;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 15px;
+        }
+
+        .part h3 {
+            color: #000000;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            font-weight: 400;
+        }
+
+        .part h4 {
+            color: #000000;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        .part p {
+            margin-bottom: 20px;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .info-box {
+            background: #f5f5f5;
+            padding: 25px;
+            margin: 25px 0;
+            border-left: 3px solid #000000;
+        }
+
+        .info-box h4 {
+            margin-top: 0;
+            color: #000000;
+            font-weight: 500;
+        }
+
+        .prompt-section {
+            margin: 40px 0;
+            padding: 30px;
+            background: #f5f5f5;
+            border-left: 3px solid #000000;
+        }
+
+        .prompt-title {
+            font-size: 1.3em;
+            color: #000000;
+            margin-bottom: 20px;
+            font-weight: 500;
+            font-style: normal;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .comparison-item {
+            text-align: center;
+            background: #ffffff;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .comparison-item img {
+            width: 100%;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 15px;
+        }
+
+        .comparison-label {
+            font-weight: 500;
+            color: #000000;
+            font-size: 1em;
+            margin-top: 10px;
+        }
+
+        .reflection-box {
+            background: #f5f5f5;
+            padding: 25px;
+            margin: 30px 0;
+            border-left: 3px solid #000000;
+        }
+
+        .reflection-box h4 {
+            color: #000000;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .image-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .image-caption {
+            font-style: normal;
+            color: #666;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+
+        img {
+            border: 1px solid #e0e0e0;
+            display: block;
+        }
+
+        /* Remove rounded corners and heavy shadows for cleaner look */
+        .part img {
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+            .main-content {
+                margin-left: 240px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .content {
+                padding: 30px;
+            }
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 40px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .image-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <a href="../index.html" class="nav-back">← Back to Portfolio</a>
+            <h1>Project 5</h1>
+            <p>Part A: Diffusion Models</p>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-section">Part A</li>
+            <li><a href="#part0" class="nav-link">Part 0: Setup</a></li>
+            <li class="nav-section">Part 1: Sampling Loops</li>
+            <li><a href="#part1-1" class="nav-link nav-subsection">1.1 Forward Process</a></li>
+            <li><a href="#part1-2" class="nav-link nav-subsection">1.2 Classical Denoising</a></li>
+            <li><a href="#part1-3" class="nav-link nav-subsection">1.3 One-Step Denoising</a></li>
+            <li><a href="#part1-4" class="nav-link nav-subsection">1.4 Iterative Denoising</a></li>
+            <li><a href="#part1-5" class="nav-link nav-subsection">1.5 Diffusion Sampling</a></li>
+            <li><a href="#part1-6" class="nav-link nav-subsection">1.6 Classifier-Free Guidance</a></li>
+            <li><a href="#part1-7" class="nav-link nav-subsection">1.7 Image-to-image Translation</a></li>
+            <li><a href="#part1-8" class="nav-link nav-subsection">1.8 Visual Anagrams</a></li>
+            <li><a href="#part1-9" class="nav-link nav-subsection">1.9 Hybrid Images</a></li>
+            <li class="nav-section">Part B</li>
+            <li><a href="#part2-1" class="nav-link">Part 1: Single-Step Denoising</a></li>
+            <li><a href="#part2-2" class="nav-link nav-subsection">1.1 Implementing the UNet</a></li>
+            <li><a href="#part2-3" class="nav-link nav-subsection">1.2 Training a Denoiser</a></li>
+            <li><a href="#part2-4" class="nav-link">Part 2: Flow Matching</a></li>
+            <li><a href="#part2-5" class="nav-link nav-subsection">2.1 Time Conditioning</a></li>
+            <li><a href="#part2-6" class="nav-link nav-subsection">2.2 Training the UNet</a></li>
+            <li><a href="#part2-7" class="nav-link nav-subsection">2.3 Sampling</a></li>
+            <li><a href="#part2-8" class="nav-link nav-subsection">2.4 Class-Conditioning</a></li>
+            <li><a href="#part2-9" class="nav-link nav-subsection">2.5 Training</a></li>
+            <li><a href="#part2-10" class="nav-link nav-subsection">2.6 Sampling</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="header">
+            <h1>Project 5: The Power of Diffusion Models</h1>
+            <p>Part A: Diffusion Sampling, Inpainting, and Optical Illusions</p>
+        </header>
+
+        <div class="content">
+            <!-- Part 0: Setup -->
+            <div class="part" id="part0">
+                <h2>Part 0: Setup and Text-to-Image Generation</h2>
+                
+                <p>In this part, we set up the DeepFloyd IF diffusion model and experiment with text-to-image generation using different inference step counts.</p>
+
+                <div class="info-box">
+                    <h4>Configuration</h4>
+                    <p><strong>Random Seed:</strong> 100 (used consistently throughout all parts)</p>
+                    <p><strong>Inference Steps Tested:</strong> 20 and 50</p>
+                </div>
+
+                <h3>Text Prompts and Generated Images</h3>
+                <p>We tested three different text prompts with both 20 and 50 inference steps to compare the quality and detail of the generated images.</p>
+
+                <div class="info-box">
+                    <h4>Prompts Tested</h4>
+                    <ol>
+                        <li>a photo of a vintage red car</li>
+                        <li>a sketch of a medieval castle</li>
+                        <li>an oil painting of a snowy mountain valley</li>
+                    </ol>
+                </div>
+
+                <h4>Results Comparison: 20 vs 50 Inference Steps</h4>
+                <p>The following screenshots show the generated images for all three prompts at both inference step counts:</p>
+
+                <div class="comparison-grid">
+                    <div class="comparison-item">
+                        <img src="proj5a/q0/part0_20.png" alt="Results with 20 inference steps">
+                        <div class="comparison-label">20 Inference Steps</div>
+                    </div>
+                    <div class="comparison-item">
+                        <img src="proj5a/q0/part0_50.png" alt="Results with 50 inference steps">
+                        <div class="comparison-label">50 Inference Steps</div>
+                    </div>
+                </div>
+
+                <div class="reflection-box">
+                    <h4>Reflection on Inference Steps</h4>
+                    <p>Compared to 20 inference steps, using 50 inference steps produces images that are sharper, more detailed, and more semantically aligned with the text prompts. The 20-step outputs capture the overall structure and concept but exhibit softer edges, lower contrast, and less refined textures. In contrast, the 50-step outputs show clearer object boundaries, richer colors, improved prompt fidelity, and more consistent global structure, reflecting the additional denoising refinements allowed by the diffusion process.</p>
+                </div>
+            </div>
+
+            <!-- Part 1.1: Implementing the Forward Process -->
+            <div class="part" id="part1-1">
+                <h2>Part 1.1: Implementing the Forward Process</h2>
+                
+                <p>In this part, we implement the forward process which takes a clean image and adds noise to it. The forward process is defined by adding Gaussian noise scaled by the noise coefficients at different timesteps.</p>
+
+                <h3>Noisy Campanile at Different Noise Levels</h3>
+                <p>Below are the results of applying the forward process to the Berkeley Campanile at noise levels t = [250, 500, 750]:</p>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin: 30px 0;">
+                    <div class="image-container">
+                        <img src="proj5a/q1_1/noisy_t_250.png" alt="Noisy Campanile at t=250" style="width: 100%; height: auto;">
+                        <div class="image-caption">Noisy Campanile at t=250</div>
+                    </div>
+                    <div class="image-container">
+                        <img src="proj5a/q1_1/noisy_t_500.png" alt="Noisy Campanile at t=500" style="width: 100%; height: auto;">
+                        <div class="image-caption">Noisy Campanile at t=500</div>
+                    </div>
+                    <div class="image-container">
+                        <img src="proj5a/q1_1/noisy_t_750.png" alt="Noisy Campanile at t=750" style="width: 100%; height: auto;">
+                        <div class="image-caption">Noisy Campanile at t=750</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Part 1.2: Classical Denoising -->
+            <div class="part" id="part1-2">
+                <h2>Part 1.2: Classical Denoising</h2>
+                
+                <p>In this part, we attempt to denoise the noisy images using classical Gaussian blur filtering. This demonstrates the limitations of traditional denoising methods compared to diffusion models.</p>
+
+                <h3>Gaussian Blur Denoising Results</h3>
+                <p>For each of the 3 noisy Campanile images, we show the noisy version (top row) alongside the best Gaussian-denoised version (bottom row):</p>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, auto); gap: 20px; margin: 30px 0;">
+                    <!-- Top row: Noisy images -->
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_1/noisy_t_250.png" alt="Noisy Campanile at t=250" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Noisy Campanile at t=250</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_1/noisy_t_500.png" alt="Noisy Campanile at t=500" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Noisy Campanile at t=500</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_1/noisy_t_750.png" alt="Noisy Campanile at t=750" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Noisy Campanile at t=750</div>
+                    </div>
+                    <!-- Bottom row: Denoised images -->
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_2/denoised_t_250.png" alt="Gaussian Blur Denoising at t=250" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Gaussian Blur Denoising at t=250</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_2/denoised_t_500.png" alt="Gaussian Blur Denoising at t=500" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Gaussian Blur Denoising at t=500</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_2/denoised_t_750.png" alt="Gaussian Blur Denoising at t=750" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Gaussian Blur Denoising at t=750</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Part 1.3: One-Step Denoising -->
+            <div class="part" id="part1-3">
+                <h2>Part 1.3: One-Step Denoising</h2>
+                
+                <p>In this part, we use a pretrained diffusion model (UNet) to denoise images. The UNet predicts the noise in a noisy image, which we can then remove to recover an estimate of the original image.</p>
+
+                <h3>One-Step Denoising Results</h3>
+                <p>For the 3 noisy images (t = [250, 500, 750]), we show the noisy version (top row) and the one-step denoised estimate (bottom row):</p>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, auto); gap: 20px; margin: 30px 0;">
+                    <!-- Top row: Noisy images -->
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_1/noisy_t_250.png" alt="Noisy Campanile at t=250" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Noisy Campanile at t=250</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_1/noisy_t_500.png" alt="Noisy Campanile at t=500" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Noisy Campanile at t=500</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_1/noisy_t_750.png" alt="Noisy Campanile at t=750" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Noisy Campanile at t=750</div>
+                    </div>
+                    <!-- Bottom row: One-step denoised images -->
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_3/one_step_250.png" alt="One-Step Denoised Campanile at t=250" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">One-Step Denoised Campanile at t=250</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_3/one_step_500.png" alt="One-Step Denoised Campanile at t=500" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">One-Step Denoised Campanile at t=500</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_3/one_step_750.png" alt="One-Step Denoised Campanile at t=750" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">One-Step Denoised Campanile at t=750</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Part 1.4: Iterative Denoising -->
+            <div class="part" id="part1-4">
+                <h2>Part 1.4: Iterative Denoising</h2>
+                
+                <p>In this part, we implement iterative denoising, which applies the denoising process multiple times in a strided manner. This produces much better results than single-step denoising, especially for highly noisy images.</p>
+
+                <h3>Denoising Progression</h3>
+                <p>Below shows the noisy Campanile at different timesteps during the iterative denoising process (every 5th loop):</p>
+
+                <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; margin: 30px 0;">
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_4/q1_4_intermediate_t90.png" alt="Noisy Campanile at t=90" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Noisy Campanile at t=90</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_4/q1_4_intermediate_t240.png" alt="Noisy Campanile at t=240" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Noisy Campanile at t=240</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_4/q1_4_intermediate_t390.png" alt="Noisy Campanile at t=390" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Noisy Campanile at t=390</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_4/q1_4_intermediate_t540.png" alt="Noisy Campanile at t=540" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Noisy Campanile at t=540</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_4/q1_4_intermediate_t690.png" alt="Noisy Campanile at t=690" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Noisy Campanile at t=690</div>
+                    </div>
+                </div>
+
+                <h3>Comparison of Denoising Methods</h3>
+                <p>Below compares the original image with different denoising approaches:</p>
+
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin: 30px 0;">
+                    <div style="text-align: center;">
+                        <img src="proj5a/campanile.jpg" alt="Original Campanile" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Original</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_4/q1_4_iterative.png" alt="Iteratively Denoised Campanile" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Iteratively Denoised Campanile</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_4/q1_4_one_step_t690.png" alt="One-Step Denoised Campanile" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">One-Step Denoised Campanile</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_4/q1_4_gaussian_blur.png" alt="Gaussian Blurred Campanile" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Gaussian Blurred Campanile</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Part 1.5: Diffusion Model Sampling -->
+            <div class="part" id="part1-5">
+                <h2>Part 1.5: Diffusion Model Sampling</h2>
+                
+                <p>In this part, we use the iterative_denoise function to generate images from scratch by starting with pure random noise and denoising it. This demonstrates the generative capability of diffusion models.</p>
+
+                <h3>Sampled Images from "a high quality photo"</h3>
+                <p>Below are 5 images generated by denoising pure noise using the prompt "a high quality photo":</p>
+
+                <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; margin: 30px 0;">
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_5/q1_5_sample_1.png" alt="Sample 1" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Sample 1</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_5/q1_5_sample_2.png" alt="Sample 2" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Sample 2</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_5/q1_5_sample_3.png" alt="Sample 3" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Sample 3</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_5/q1_5_sample_4.png" alt="Sample 4" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Sample 4</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_5/q1_5_sample_5.png" alt="Sample 5" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Sample 5</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Part 1.6: Classifier-Free Guidance (CFG) -->
+            <div class="part" id="part1-6">
+                <h2>Part 1.6: Classifier-Free Guidance (CFG)</h2>
+                
+                <p>In this part, we implement Classifier-Free Guidance (CFG), which improves image quality by computing both conditional and unconditional noise estimates and combining them. This technique significantly enhances the quality and prompt alignment of generated images.</p>
+
+                <h3>Sampled Images with CFG</h3>
+                <p>Below are 5 images generated using the prompt "a high quality photo" with a CFG scale of 7:</p>
+
+                <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; margin: 30px 0;">
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_6/q1_6_sample_1_upsampled.png" alt="Sample 1 with CFG" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Sample 1 with CFG</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_6/q1_6_sample_2_upsampled.png" alt="Sample 2 with CFG" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Sample 2 with CFG</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_6/q1_6_sample_3_upsampled.png" alt="Sample 3 with CFG" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Sample 3 with CFG</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_6/q1_6_sample_4_upsampled.png" alt="Sample 4 with CFG" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Sample 4 with CFG</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_6/q1_6_sample_5_upsampled.png" alt="Sample 5 with CFG" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Sample 5 with CFG</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Part 1.7: Image-to-image Translation -->
+            <div class="part" id="part1-7">
+                <h2>Part 1.7: Image-to-image Translation</h2>
+                
+                <p>In this part, we use the diffusion model to edit existing images by adding noise and then denoising. This allows us to project images onto the natural image manifold and make creative edits.</p>
+
+                <!-- Part 1.7.1: Editing Hand-Drawn and Web Images -->
+                <h3>Part 1.7.1: Editing Hand-Drawn and Web Images</h3>
+                <p>This procedure works particularly well when starting with non-realistic images (e.g., paintings, sketches, scribbles) and projecting them onto the natural image manifold.</p>
+
+                <h4>Web Image: Sunset</h4>
+                <p>Below shows a web image edited at different noise levels [1, 3, 5, 7, 10, 20] with the original on the right:</p>
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px; margin: 30px 0;">
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_1/web-image-sunset/q1_7_1_a_cfg_i_start_1.png" alt="Sunset at i_start=1" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Sunset at i_start=1</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_1/web-image-sunset/q1_7_1_a_cfg_i_start_3.png" alt="Sunset at i_start=3" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Sunset at i_start=3</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_1/web-image-sunset/q1_7_1_a_cfg_i_start_5.png" alt="Sunset at i_start=5" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Sunset at i_start=5</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_1/web-image-sunset/q1_7_1_a_cfg_i_start_7.png" alt="Sunset at i_start=7" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Sunset at i_start=7</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_1/web-image-sunset/q1_7_1_a_cfg_i_start_10.png" alt="Sunset at i_start=10" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Sunset at i_start=10</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_1/web-image-sunset/q1_7_1_a_cfg_i_start_20.png" alt="Sunset at i_start=20" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Sunset at i_start=20</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_1/web-image-sunset/sunset_web_original.png" alt="Original Sunset" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Original</div>
+                    </div>
+                </div>
+
+                <h4>Hand-Drawn Image 1: Plane</h4>
+                <p>Below shows a hand-drawn plane edited at different noise levels [1, 3, 5, 7, 10, 20] with the original on the right:</p>
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px; margin: 30px 0;">
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_1/plane/q1_7_1_b_cfg_i_start_1.png" alt="Plane at i_start=1" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Plane at i_start=1</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_1/plane/q1_7_1_b_cfg_i_start_3.png" alt="Plane at i_start=3" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Plane at i_start=3</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_1/plane/q1_7_1_b_cfg_i_start_5.png" alt="Plane at i_start=5" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Plane at i_start=5</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_1/plane/q1_7_1_b_cfg_i_start_7.png" alt="Plane at i_start=7" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Plane at i_start=7</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_1/plane/q1_7_1_b_cfg_i_start_10.png" alt="Plane at i_start=10" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Plane at i_start=10</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_1/plane/q1_7_1_b_cfg_i_start_20.png" alt="Plane at i_start=20" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Plane at i_start=20</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_1/plane/q1_7_drawn_plane.png" alt="Original Plane" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Original</div>
+                    </div>
+                </div>
+
+                <h4>Hand-Drawn Image 2: Table</h4>
+                <p>Below shows a hand-drawn table edited at different noise levels [1, 3, 5, 7, 10, 20] with the original on the right:</p>
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px; margin: 30px 0;">
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_1/table/q1_7_1_b_cfg_i_start_1.png" alt="Table at i_start=1" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Table at i_start=1</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_1/table/q1_7_1_b_cfg_i_start_3.png" alt="Table at i_start=3" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Table at i_start=3</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_1/table/q1_7_1_b_cfg_i_start_5.png" alt="Table at i_start=5" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Table at i_start=5</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_1/table/q1_7_1_b_cfg_i_start_7.png" alt="Table at i_start=7" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Table at i_start=7</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_1/table/q1_7_1_b_cfg_i_start_10.png" alt="Table at i_start=10" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Table at i_start=10</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_1/table/q1_7_1_b_cfg_i_start_20.png" alt="Table at i_start=20" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Table at i_start=20</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_1/table/q1_7_drawn_table.png" alt="Original Table" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Original</div>
+                    </div>
+                </div>
+
+                <!-- Part 1.7.2: Inpainting -->
+                <h3>Part 1.7.2: Inpainting</h3>
+                <p>Inpainting allows us to fill in masked regions of an image by using the diffusion model to generate new content that matches the surrounding context.</p>
+
+                <h4>Inpainting Results</h4>
+                <p>Below shows the Campanile and two custom images with inpainted regions:</p>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin: 30px 0;">
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_2/final/campanile_output.png" alt="Campanile Inpainted" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Campanile Inpainted</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_2/final/drive_output.png" alt="Drive Inpainted" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Drive Inpainted</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_2/final/nyc_output.png" alt="NYC Inpainted" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">NYC Inpainted</div>
+                    </div>
+                </div>
+
+                <!-- Part 1.7.3: Text-Conditional Image-to-image Translation -->
+                <h3>Part 1.7.3: Text-Conditional Image-to-image Translation</h3>
+                <p>In this part, we guide the image projection using text prompts, allowing us to control the style and content of the generated edits.</p>
+
+                <h4>Campanile with Text Conditioning</h4>
+                <p>Below shows the Campanile edited at different noise levels [1, 3, 5, 7, 10, 20] using text conditioning:</p>
+                <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin: 30px 0;">
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_3/campanile/q1_7_3_campanile_cfg_i_start_1.png" alt="Campanile at i_start=1" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Campanile at i_start=1</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_3/campanile/q1_7_3_campanile_cfg_i_start_3.png" alt="Campanile at i_start=3" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Campanile at i_start=3</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_3/campanile/q1_7_3_campanile_cfg_i_start_5.png" alt="Campanile at i_start=5" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Campanile at i_start=5</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_3/campanile/q1_7_3_campanile_cfg_i_start_7.png" alt="Campanile at i_start=7" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Campanile at i_start=7</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_3/campanile/q1_7_3_campanile_cfg_i_start_10.png" alt="Campanile at i_start=10" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Campanile at i_start=10</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_3/campanile/q1_7_3_campanile_cfg_i_start_20.png" alt="Campanile at i_start=20" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Campanile at i_start=20</div>
+                    </div>
+                </div>
+
+                <h4>Custom Image 1: Drive</h4>
+                <p>Below shows a custom image edited at different noise levels [1, 3, 5, 7, 10, 20] using text conditioning:</p>
+                <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin: 30px 0;">
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_3/drive/q1_7_3_drive_cfg_i_start_1.png" alt="Drive at i_start=1" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Drive at i_start=1</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_3/drive/q1_7_3_drive_cfg_i_start_3.png" alt="Drive at i_start=3" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Drive at i_start=3</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_3/drive/q1_7_3_drive_cfg_i_start_5.png" alt="Drive at i_start=5" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Drive at i_start=5</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_3/drive/q1_7_3_drive_cfg_i_start_7.png" alt="Drive at i_start=7" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Drive at i_start=7</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_3/drive/q1_7_3_drive_cfg_i_start_10.png" alt="Drive at i_start=10" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Drive at i_start=10</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_3/drive/q1_7_3_drive_cfg_i_start_20.png" alt="Drive at i_start=20" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Drive at i_start=20</div>
+                    </div>
+                </div>
+
+                <h4>Custom Image 2: NYC</h4>
+                <p>Below shows a custom image edited at different noise levels [1, 3, 5, 7, 10, 20] using text conditioning:</p>
+                <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin: 30px 0;">
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_3/nyc/q1_7_3_nyc_cfg_i_start_1.png" alt="NYC at i_start=1" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">NYC at i_start=1</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_3/nyc/q1_7_3_nyc_cfg_i_start_3.png" alt="NYC at i_start=3" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">NYC at i_start=3</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_3/nyc/q1_7_3_nyc_cfg_i_start_5.png" alt="NYC at i_start=5" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">NYC at i_start=5</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_3/nyc/q1_7_3_nyc_cfg_i_start_7.png" alt="NYC at i_start=7" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">NYC at i_start=7</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_3/nyc/q1_7_3_nyc_cfg_i_start_10.png" alt="NYC at i_start=10" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">NYC at i_start=10</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_7/part_3/nyc/q1_7_3_nyc_cfg_i_start_20.png" alt="NYC at i_start=20" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">NYC at i_start=20</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Part 1.8: Visual Anagrams -->
+            <div class="part" id="part1-8">
+                <h2>Part 1.8: Visual Anagrams</h2>
+                
+                <p>In this part, we create visual anagrams - images that look like one thing when viewed normally, but reveal a different image when flipped upside down. This is achieved by averaging noise estimates from the diffusion model when processing the image in both orientations with different text prompts.</p>
+
+                <h3>Illusion 1: Car and Castle</h3>
+                <p>This illusion shows a car when viewed normally, but reveals a castle when flipped upside down (and vice versa):</p>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin: 30px 0; max-width: 800px; margin-left: auto; margin-right: auto;">
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_8/car_castle_upsampled.png" alt="Car (flip for Castle)" style="width: 100%; max-width: 350px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Car (flip upside down to see Castle)</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_8/castle_car_upsampled.png" alt="Castle (flip for Car)" style="width: 100%; max-width: 350px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Castle (flip upside down to see Car)</div>
+                    </div>
+                </div>
+
+                <h3>Illusion 2: Jellyfish and Hot Air Balloon</h3>
+                <p>This illusion shows a jellyfish when viewed normally, but reveals a hot air balloon when flipped upside down (and vice versa):</p>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin: 30px 0; max-width: 800px; margin-left: auto; margin-right: auto;">
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_8/jellyfish_upsampled.png" alt="Jellyfish (flip for Hot Air Balloon)" style="width: 100%; max-width: 350px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Jellyfish (flip upside down to see Hot Air Balloon)</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_8/hot_air_balloon_upsampled.png" alt="Hot Air Balloon (flip for Jellyfish)" style="width: 100%; max-width: 350px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Hot Air Balloon (flip upside down to see Jellyfish)</div>
+                    </div>
+                </div>
+
+                <h3>Additional Illusion: Castle and Valley</h3>
+                <p>This illusion shows a castle when viewed normally, but reveals a valley when flipped upside down:</p>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin: 30px 0; max-width: 800px; margin-left: auto; margin-right: auto;">
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_8/castle_valley.png" alt="Castle" style="width: 100%; max-width: 350px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Castle (normal orientation)</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_8/valley_upsampled.png" alt="Valley (flipped)" style="width: 100%; max-width: 350px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Valley (flip upside down to see Castle)</div>
+                    </div>
+                </div>
+
+                <h3>Challenging Pair: Lion and Sunset</h3>
+                <p>Below shows an attempt at creating a visual anagram with a lion and sunset. This combination proved more difficult to achieve a clear illusion:</p>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin: 30px 0; max-width: 800px; margin-left: auto; margin-right: auto;">
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_8/lion_upsampled.png" alt="Lion" style="width: 100%; max-width: 350px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Lion</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_8/sunset_upsampled.png" alt="Sunset" style="width: 100%; max-width: 350px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Sunset</div>
+                    </div>
+                </div>
+                <div class="reflection-box">
+                    <h4>Note on Difficulty</h4>
+                    <p>Creating a visual anagram with a lion and sunset proved challenging. The distinct shapes and orientations of these subjects make it difficult to create a convincing illusion that works well in both orientations. The diffusion model struggles to reconcile these very different visual concepts when averaging the noise estimates.</p>
+                </div>
+            </div>
+
+            <!-- Part 1.9: Hybrid Images -->
+            <div class="part" id="part1-9">
+                <h2>Part 1.9: Hybrid Images</h2>
+                
+                <p>In this part, we create hybrid images using Factorized Diffusion. Hybrid images combine low frequencies from one image with high frequencies from another, creating images that appear different when viewed from different distances or with different focus.</p>
+
+                <h3>Hybrid Image Results</h3>
+                <p>Below are hybrid images created by combining noise estimates from different text prompts using low-pass and high-pass filtering:</p>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin: 30px 0;">
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_9/hybrid_mountain_castle_2.png" alt="Hybrid Mountain Castle" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Hybrid: Mountain and Castle</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_9/vintage_sunset.png" alt="Hybrid Vintage Sunset" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Hybrid: Vintage and Sunset</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5a/q1_9/lion_plants.png" alt="Hybrid Lion Plants" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);">
+                        <div class="image-caption">Hybrid: Lion and Plants</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Part B: Flow Matching from Scratch -->
+            <div class="part" id="part2-1">
+                <h2>Part B: Flow Matching from Scratch</h2>
+                
+                <p>In Part B, we train our own flow matching model on MNIST from scratch. We start with a simple single-step denoiser and then progress to iterative flow matching with time and class conditioning.</p>
+            </div>
+
+            <!-- Part 1: Training a Single-Step Denoising UNet -->
+            <div class="part" id="part2-2">
+                <h2>Part 1: Training a Single-Step Denoising UNet</h2>
+                
+                <p>We begin by building a simple one-step denoiser that maps a noisy image to a clean image using an L2 loss objective.</p>
+
+                <h3>1.1 Implementing the UNet</h3>
+                <p>We implement a UNet architecture consisting of downsampling and upsampling blocks with skip connections. The architecture uses standard operations including Conv2d, BatchNorm, GELU activations, and ConvTranspose2d for upsampling.</p>
+                <div class="image-container">
+                    <img src="proj5b/desc_1_1.png" alt="UNet Architecture">
+                    <div class="image-caption">UNet architecture diagram</div>
+                </div>
+                <div class="image-container">
+                    <img src="proj5b/desc_1_1_part2.png" alt="UNet Operations">
+                    <div class="image-caption">Standard UNet operations</div>
+                </div>
+            </div>
+
+            <div class="part" id="part2-3">
+                <h2>Part 1.2: Using the UNet to Train a Denoiser</h2>
+                
+                <h4>Visualization of Noising Process</h4>
+                <p>Visualize the different noising processes over σ:</p>
+                <div class="image-container">
+                    <img src="proj5b/1_2.png" alt="Noising Process Visualization">
+                    <div class="image-caption">Noising process visualization with varying σ</div>
+                </div>
+
+                <h3>1.2.1 Training</h3>
+                <p>We train the UNet to denoise noisy MNIST images. The training process involves generating noisy images by adding Gaussian noise to clean images and training the model to predict the clean images.</p>
+
+                <h4>Training Loss Curve</h4>
+                <div class="image-container">
+                    <img src="proj5b/training_loss_1_2_1.png" alt="Training Loss Curve">
+                    <div class="image-caption">Training loss curve over 5 epochs</div>
+                </div>
+
+                <h4>Sample Results</h4>
+                <p>Results on test set digits with noise level 0.5 after the 1st and 5th epoch:</p>
+                <div class="image-container">
+                    <img src="proj5b/1_2_1.png" alt="Training Results">
+                    <div class="image-caption">Results after 1st and 5th epoch</div>
+                </div>
+
+                <h3>1.2.2 Out-of-Distribution Testing</h3>
+                <p>We test the denoiser on noise levels it wasn't trained on to evaluate generalization:</p>
+                <div class="image-container">
+                    <img src="proj5b/1_2_2.png" alt="Out-of-Distribution Testing">
+                    <div class="image-caption">Denoiser results on test set with varying noise levels</div>
+                </div>
+
+                <h3>1.2.3 Denoising Pure Noise</h3>
+                <p>We train the denoiser to map pure Gaussian noise to clean images, treating it as a generative task.</p>
+
+                <h4>Training Loss Curve</h4>
+                <div class="image-container">
+                    <img src="proj5b/training_loss_1_2_3.png" alt="Pure Noise Training Loss">
+                    <div class="image-caption">Training loss curve for pure noise denoising</div>
+                </div>
+
+                <h4>Sample Results</h4>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin: 30px 0;">
+                    <div style="text-align: center;">
+                        <img src="proj5b/1_2_3_epoch1.png" alt="Pure Noise Results Epoch 1" style="width: 100%; border: 1px solid #e0e0e0;">
+                        <div class="image-caption">Results after Epoch 1</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5b/1_2_3_epoch5.png" alt="Pure Noise Results Epoch 5" style="width: 100%; border: 1px solid #e0e0e0;">
+                        <div class="image-caption">Results after Epoch 5</div>
+                    </div>
+                </div>
+
+                <div class="reflection-box">
+                    <h4>Patterns Observed</h4>
+                    <p>When training a denoiser on pure Gaussian noise to predict clean MNIST digits, the model learns to output an "average digit" - a blurry amalgamation of all training examples. This occurs because with MSE loss, the model minimizes the sum of squared distances to all training examples, effectively predicting the centroid or mean of the entire dataset. Since pure noise provides no information about which specific digit to generate, the optimal MSE prediction is the average of all possible outputs. The result is a ghostly, indistinct image that vaguely resembles digit 3, but contains features from all classes blended together. This demonstrates why single-step denoising fails as a generative model - without intermediate steps or conditioning, the network cannot learn to map noise to diverse, realistic samples.</p>
+                </div>
+            </div>
+
+            <!-- Part 2: Training a Flow Matching Model -->
+            <div class="part" id="part2-4">
+                <h2>Part 2: Training a Flow Matching Model</h2>
+            </div>
+
+            <div class="part" id="part2-5">
+                <h2>2.1 Adding Time Conditioning to UNet</h2>
+                
+                <p>To make the UNet time-aware, we inject the timestep t into the network using FCBlocks (fully-connected blocks). The conditioning signal is embedded and used to modulate intermediate feature maps in the decoder path.</p>
+                <div class="image-container">
+                    <img src="proj5b/desc_2_1.png" alt="Time-Conditioned UNet Architecture">
+                    <div class="image-caption">Time-conditioned UNet architecture with FCBlocks for conditioning</div>
+                </div>
+                <div class="image-container">
+                    <img src="proj5b/desc_2_1_part2.png" alt="FCBlock Architecture">
+                    <div class="image-caption">FCBlock architecture for time conditioning</div>
+                </div>
+            </div>
+
+            <div class="part" id="part2-6">
+                <h2>2.2 Training the UNet</h2>
+                
+                <p>We train the time-conditioned UNet by sampling random images, random timesteps, and training the model to predict the flow vector at each timestep.</p>
+
+                <h4>Training Algorithm</h4>
+                <div class="image-container">
+                    <img src="proj5b/2_2_algo.png" alt="Training Algorithm" style="max-width: 500px; width: 100%;">
+                    <div class="image-caption">Algorithm for training time-conditioned UNet</div>
+                </div>
+
+                <h4>Training Loss Curve</h4>
+                <div class="image-container">
+                    <img src="proj5b/training_loss_2_2.png" alt="Time-Conditioned Training Loss">
+                    <div class="image-caption">Training loss curve for time-conditioned UNet</div>
+                </div>
+            </div>
+
+            <div class="part" id="part2-7">
+                <h2>2.3 Sampling from the UNet</h2>
+                
+                <p>We use iterative denoising to sample new digits by repeatedly predicting the flow vector and taking small Euler steps toward the data distribution.</p>
+
+                <h4>Sampling Algorithm</h4>
+                <div class="image-container">
+                    <img src="proj5b/2_3_algo.png" alt="Sampling Algorithm" style="max-width: 500px; width: 100%;">
+                    <div class="image-caption">Algorithm for sampling from time-conditioned UNet</div>
+                </div>
+
+                <h4>Sampling Results</h4>
+                <p>Results after 1, 5, and 10 epochs of training:</p>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin: 30px 0;">
+                    <div style="text-align: center;">
+                        <img src="proj5b/2_3_epoch1.png" alt="Samples after Epoch 1" style="width: 100%; border: 1px solid #e0e0e0;">
+                        <div class="image-caption">Samples after Epoch 1</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5b/2_3_epoch5.png" alt="Samples after Epoch 5" style="width: 100%; border: 1px solid #e0e0e0;">
+                        <div class="image-caption">Samples after Epoch 5</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5b/2_3_epoch10.png" alt="Samples after Epoch 10" style="width: 100%; border: 1px solid #e0e0e0;">
+                        <div class="image-caption">Samples after Epoch 10</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="part" id="part2-8">
+                <h2>2.4 Adding Class-Conditioning to UNet</h2>
+                
+                <p>To improve sample quality and enable class-specific generation, we add class-conditioning to the UNet. The class label is embedded as a one-hot vector and combined with time conditioning. We implement classifier-free guidance by dropping the class conditioning 10% of the time during training.</p>
+            </div>
+
+            <div class="part" id="part2-9">
+                <h2>2.5 Training the UNet</h2>
+                
+                <p>We train the class-conditioned UNet using the same procedure as time-only conditioning, with the addition of class labels and periodic unconditional generation.</p>
+
+                <h4>Training Algorithm</h4>
+                <div class="image-container">
+                    <img src="proj5b/2_5_algo.png" alt="Class-Conditional Training Algorithm" style="max-width: 500px; width: 100%;">
+                    <div class="image-caption">Algorithm for training class-conditioned UNet</div>
+                </div>
+
+                <h4>Training Loss Curve</h4>
+                <div class="image-container">
+                    <img src="proj5b/training_loss_2_5.png" alt="Class-Conditional Training Loss">
+                    <div class="image-caption">Training loss curve for class-conditioned UNet</div>
+                </div>
+            </div>
+
+            <div class="part" id="part2-10">
+                <h2>2.6 Sampling from the UNet</h2>
+                
+                <p>We sample with class-conditioning and classifier-free guidance (γ = 1.5) to generate specific digits.</p>
+
+                <h4>Sampling Algorithm</h4>
+                <div class="image-container">
+                    <img src="proj5b/2_6_algo.png" alt="Class-Conditional Sampling Algorithm" style="max-width: 500px; width: 100%;">
+                    <div class="image-caption">Algorithm for sampling from class-conditioned UNet</div>
+                </div>
+
+                <h4>Sampling Results</h4>
+                <p>Results after 1, 5, and 10 epochs of training, showing 4 instances of each digit:</p>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin: 30px 0;">
+                    <div style="text-align: center;">
+                        <img src="proj5b/2_6_epoch1.png" alt="Class-Conditional Samples Epoch 1" style="width: 100%; border: 1px solid #e0e0e0;">
+                        <div class="image-caption">Samples after Epoch 1</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5b/2_6_epoch5.png" alt="Class-Conditional Samples Epoch 5" style="width: 100%; border: 1px solid #e0e0e0;">
+                        <div class="image-caption">Samples after Epoch 5</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5b/2_6_epoch10.png" alt="Class-Conditional Samples Epoch 10" style="width: 100%; border: 1px solid #e0e0e0;">
+                        <div class="image-caption">Samples after Epoch 10</div>
+                    </div>
+                </div>
+
+                <h3>Removing the Learning Rate Scheduler</h3>
+                <p>We remove the exponential learning rate scheduler while maintaining performance.</p>
+
+                <h4>Training Loss Curve</h4>
+                <div class="image-container">
+                    <img src="proj5b/training_loss_2_6_without_scheduler.png" alt="Training Loss Without Scheduler">
+                    <div class="image-caption">Training loss curve without learning rate scheduler</div>
+                </div>
+
+                <h4>Sampling Results</h4>
+                <p>Results after training without the scheduler:</p>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin: 30px 0;">
+                    <div style="text-align: center;">
+                        <img src="proj5b/2_6_no_scheduler_epoch1.png" alt="No Scheduler Epoch 1" style="width: 100%; border: 1px solid #e0e0e0;">
+                        <div class="image-caption">Samples after Epoch 1</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5b/2_6_no_scheduler_epoch5.png" alt="No Scheduler Epoch 5" style="width: 100%; border: 1px solid #e0e0e0;">
+                        <div class="image-caption">Samples after Epoch 5</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <img src="proj5b/2_6_no_scheduler_epoch10.png" alt="No Scheduler Epoch 10" style="width: 100%; border: 1px solid #e0e0e0;">
+                        <div class="image-caption">Samples after Epoch 10</div>
+                    </div>
+                </div>
+
+                <div class="reflection-box">
+                    <h4>Compensating for the Loss of the Scheduler</h4>
+                    <p>To maintain performance without the exponential learning rate scheduler, I made the following compensations:</p>
+                    <p><strong>Reduced initial learning rate:</strong> Changed from 1e-3 to 5e-4, providing a more stable learning rate that doesn't require decay to prevent overshooting later in training.</p>
+                    <p><strong>Switched to AdamW optimizer:</strong> Replaced Adam with AdamW (weight_decay=0.01), which includes built-in weight regularization that helps prevent overfitting and improves generalization without needing learning rate adjustments.</p>
+                    <p><strong>Extended training duration:</strong> Increased from 10 to 15 epochs, allowing the model more time to converge at the constant learning rate since we no longer benefit from the fine-tuning phase that the scheduler provides.</p>
+                    <p>These changes work together: the lower learning rate ensures stable convergence throughout training, AdamW's regularization maintains good generalization, and the additional epochs compensate for the slower but steadier learning process. The results show comparable quality to the scheduler-based approach, demonstrating that careful hyperparameter selection can eliminate the need for complex scheduling.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Update active state
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // Update active nav item on scroll
+        const sections = document.querySelectorAll('.part');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        function updateActiveNav() {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.pageYOffset >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', updateActiveNav);
+        updateActiveNav(); // Initial call
+    </script>
+</body>
+</html>
+
